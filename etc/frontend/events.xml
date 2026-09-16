@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="controller_front_send_response_before">
+        <observer name="kingletas_catalog_index_flush_read_metrics" instance="Kingletas\CatalogIndex\Observer\FlushReadMetrics"/>
+    </event>
+    <event name="eav_collection_abstract_load_before">
+        <observer name="kingletas_catalog_index_skip_document_attributes" instance="Kingletas\CatalogIndex\Observer\Read\SkipDocumentAttributes"/>
+    </event>
+    <event name="catalog_product_collection_load_after">
+        <observer name="kingletas_catalog_index_fill_document_attributes" instance="Kingletas\CatalogIndex\Observer\Read\FillDocumentAttributes"/>
+    </event>
+    <event name="controller_action_predispatch_catalog_product_view">
+        <observer name="kingletas_catalog_index_enter_product_page" instance="Kingletas\CatalogIndex\Observer\Read\EnterProductPage"/>
+    </event>
+    <event name="catalog_controller_product_init_after">
+        <observer name="kingletas_catalog_index_leave_product_page" instance="Kingletas\CatalogIndex\Observer\Read\LeaveProductPage"/>
+    </event>
+    <event name="controller_action_predispatch_catalog_category_view">
+        <observer name="kingletas_catalog_index_enter_category_page" instance="Kingletas\CatalogIndex\Observer\Read\EnterCategoryPage"/>
+    </event>
+    <event name="catalog_controller_category_init_after">
+        <observer name="kingletas_catalog_index_leave_category_page" instance="Kingletas\CatalogIndex\Observer\Read\LeaveCategoryPage"/>
+    </event>
+    <event name="catalog_category_collection_load_before">
+        <observer name="kingletas_catalog_index_skip_category_attributes" instance="Kingletas\CatalogIndex\Observer\Read\SkipDocumentCategoryAttributes"/>
+    </event>
+    <event name="catalog_category_collection_load_after">
+        <observer name="kingletas_catalog_index_fill_category_attributes" instance="Kingletas\CatalogIndex\Observer\Read\FillDocumentCategoryAttributes"/>
+    </event>
+</config>

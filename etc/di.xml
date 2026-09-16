@@ -1,0 +1,389 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="Kingletas\CatalogIndex\Api\DocumentStoreInterface"
+                type="Kingletas\CatalogIndex\Model\OpenSearch\OpenSearchDocumentStore"/>
+    <preference for="Kingletas\CatalogIndex\Api\IndexAdminInterface"
+                type="Kingletas\CatalogIndex\Model\OpenSearch\OpenSearchIndexAdmin"/>
+    <preference for="Kingletas\CatalogIndex\Api\DocumentReaderInterface"
+                type="Kingletas\CatalogIndex\Model\Read\DocumentReader"/>
+    <preference for="Kingletas\CatalogIndex\Api\CachePurgerInterface"
+                type="Kingletas\CatalogIndex\Model\Cache\TagPurger"/>
+
+    <type name="Kingletas\CatalogIndex\Model\Config">
+        <arguments>
+            <argument name="section" xsi:type="string">kingletas_catalog_index</argument>
+        </arguments>
+    </type>
+
+    <!-- A document is assembled from providers; adding a field is adding one here. -->
+    <type name="Kingletas\CatalogIndex\Model\Build\ProductDocumentBuilder">
+        <arguments>
+            <argument name="providers" xsi:type="array">
+                <item name="identity" xsi:type="object">Kingletas\CatalogIndex\Model\Build\Field\IdentityFieldProvider</item>
+                <item name="attributes" xsi:type="object">Kingletas\CatalogIndex\Model\Build\Field\AttributeFieldProvider</item>
+                <item name="categories" xsi:type="object">Kingletas\CatalogIndex\Model\Build\Field\CategoryFieldProvider</item>
+                <item name="url" xsi:type="object">Kingletas\CatalogIndex\Model\Build\Field\UrlFieldProvider</item>
+                <item name="media" xsi:type="object">Kingletas\CatalogIndex\Model\Build\Field\MediaFieldProvider</item>
+                <item name="tier_price" xsi:type="object">Kingletas\CatalogIndex\Model\Build\Field\TierPriceFieldProvider</item>
+                <item name="variants" xsi:type="object">Kingletas\CatalogIndex\Model\Build\Field\VariantFieldProvider</item>
+                <item name="reviews" xsi:type="object">Kingletas\CatalogIndex\Model\Build\Field\ReviewFieldProvider</item>
+                <item name="custom_options" xsi:type="object">Kingletas\CatalogIndex\Model\Build\Field\CustomOptionFieldProvider</item>
+                <item name="schedule" xsi:type="object">Kingletas\CatalogIndex\Model\Build\Field\ScheduleFieldProvider</item>
+            </argument>
+            <argument name="logger" xsi:type="object">Kingletas\CatalogIndex\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Kingletas\CatalogIndex\Model\Build\Field\IdentityFieldProvider">
+        <arguments>
+            <argument name="sortOrder" xsi:type="number">10</argument>
+        </arguments>
+    </type>
+
+    <!-- Building and page reads both use this list, so a document never claims to supply a key it does not store. -->
+    <type name="Kingletas\CatalogIndex\Model\Build\StoredAttributes">
+        <arguments>
+            <argument name="neverStored" xsi:type="array">
+                <item name="entity_id" xsi:type="string">entity_id</item>
+                <item name="row_id" xsi:type="string">row_id</item>
+                <item name="created_in" xsi:type="string">created_in</item>
+                <item name="updated_in" xsi:type="string">updated_in</item>
+                <item name="store_id" xsi:type="string">store_id</item>
+                <item name="website_ids" xsi:type="string">website_ids</item>
+                <item name="category_ids" xsi:type="string">category_ids</item>
+                <item name="request_path" xsi:type="string">request_path</item>
+                <item name="media_gallery" xsi:type="string">media_gallery</item>
+                <item name="tier_price" xsi:type="string">tier_price</item>
+                <item name="is_salable" xsi:type="string">is_salable</item>
+                <item name="salable" xsi:type="string">salable</item>
+                <item name="stock_item" xsi:type="string">stock_item</item>
+                <item name="quantity_and_stock_status" xsi:type="string">quantity_and_stock_status</item>
+                <item name="options" xsi:type="string">options</item>
+                <item name="extension_attributes" xsi:type="string">extension_attributes</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Kingletas\CatalogIndex\Model\Build\Field\AttributeFieldProvider">
+        <arguments>
+            <argument name="alwaysListing" xsi:type="array">
+                <item name="name" xsi:type="string">name</item>
+                <item name="url_key" xsi:type="string">url_key</item>
+                <item name="price" xsi:type="string">price</item>
+                <item name="special_price" xsi:type="string">special_price</item>
+                <item name="special_from_date" xsi:type="string">special_from_date</item>
+                <item name="special_to_date" xsi:type="string">special_to_date</item>
+                <item name="news_from_date" xsi:type="string">news_from_date</item>
+                <item name="news_to_date" xsi:type="string">news_to_date</item>
+                <item name="small_image" xsi:type="string">small_image</item>
+                <item name="small_image_label" xsi:type="string">small_image_label</item>
+                <item name="thumbnail" xsi:type="string">thumbnail</item>
+                <item name="thumbnail_label" xsi:type="string">thumbnail_label</item>
+                <item name="image" xsi:type="string">image</item>
+                <item name="image_label" xsi:type="string">image_label</item>
+                <item name="swatch_image" xsi:type="string">swatch_image</item>
+                <item name="short_description" xsi:type="string">short_description</item>
+                <item name="msrp" xsi:type="string">msrp</item>
+                <item name="tax_class_id" xsi:type="string">tax_class_id</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Kingletas\CatalogIndex\Model\Build\Field\VariantFieldProvider">
+        <arguments>
+            <argument name="childAttributes" xsi:type="array">
+                <item name="name" xsi:type="string">name</item>
+                <item name="status" xsi:type="string">status</item>
+                <item name="price" xsi:type="string">price</item>
+                <item name="special_price" xsi:type="string">special_price</item>
+                <item name="special_from_date" xsi:type="string">special_from_date</item>
+                <item name="special_to_date" xsi:type="string">special_to_date</item>
+                <item name="image" xsi:type="string">image</item>
+                <item name="small_image" xsi:type="string">small_image</item>
+                <item name="thumbnail" xsi:type="string">thumbnail</item>
+                <item name="swatch_image" xsi:type="string">swatch_image</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Kingletas\CatalogIndex\Model\Build\Field\ScheduleFieldProvider">
+        <arguments>
+            <argument name="fromAttributes" xsi:type="array">
+                <item name="special_from_date" xsi:type="string">special_from_date</item>
+                <item name="news_from_date" xsi:type="string">news_from_date</item>
+                <item name="custom_design_from" xsi:type="string">custom_design_from</item>
+            </argument>
+            <argument name="toAttributes" xsi:type="array">
+                <item name="special_to_date" xsi:type="string">special_to_date</item>
+                <item name="news_to_date" xsi:type="string">news_to_date</item>
+                <item name="custom_design_to" xsi:type="string">custom_design_to</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Only fields something looks documents up by are mapped; the rest is stored and never searched. -->
+    <type name="Kingletas\CatalogIndex\Model\Index\IndexDefinition">
+        <arguments>
+            <argument name="properties" xsi:type="array">
+                <item name="product" xsi:type="array">
+                    <item name="entity_id" xsi:type="array"><item name="type" xsi:type="string">integer</item></item>
+                    <item name="sku" xsi:type="array"><item name="type" xsi:type="string">keyword</item></item>
+                    <item name="type_id" xsi:type="array"><item name="type" xsi:type="string">keyword</item></item>
+                    <item name="category_ids" xsi:type="array"><item name="type" xsi:type="string">integer</item></item>
+                </item>
+                <item name="stock" xsi:type="array">
+                    <item name="is_salable" xsi:type="array"><item name="type" xsi:type="string">boolean</item></item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Kingletas\CatalogIndex\Model\Stock\StockReaderPool">
+        <arguments>
+            <argument name="readers" xsi:type="array">
+                <item name="msi" xsi:type="object">Kingletas\CatalogIndex\Model\Stock\MsiStockReader</item>
+                <item name="legacy" xsi:type="object">Kingletas\CatalogIndex\Model\Stock\LegacyStockReader</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Kingletas\CatalogIndex\Model\Update\RefresherPool">
+        <arguments>
+            <argument name="refreshers" xsi:type="array">
+                <item name="product" xsi:type="object">Kingletas\CatalogIndex\Model\Update\ProductRefresher</item>
+                <item name="price" xsi:type="object">Kingletas\CatalogIndex\Model\Update\PriceRefresher</item>
+                <item name="stock" xsi:type="object">Kingletas\CatalogIndex\Model\Update\StockRefresher</item>
+                <item name="category" xsi:type="object">Kingletas\CatalogIndex\Model\Update\CategoryRefresher</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Kingletas\CatalogIndex\Model\Rebuild\ChangelogReader">
+        <arguments>
+            <argument name="viewIds" xsi:type="array">
+                <item name="product" xsi:type="string">kingletas_catalog_index_product</item>
+                <item name="price" xsi:type="string">kingletas_catalog_index_price</item>
+                <item name="stock" xsi:type="string">kingletas_catalog_index_stock</item>
+                <item name="category" xsi:type="string">kingletas_catalog_index_category</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Checkout publishes through this, so the refreshers behind it are only built if a lane runs inline. -->
+    <type name="Kingletas\CatalogIndex\Model\Update\RefreshPublisher">
+        <arguments>
+            <argument name="refreshers" xsi:type="object">Kingletas\CatalogIndex\Model\Update\RefresherPool\Proxy</argument>
+            <argument name="logger" xsi:type="object">Kingletas\CatalogIndex\Logger</argument>
+            <argument name="priorityTopic" xsi:type="string">kingletas.catalog_index.priority</argument>
+            <argument name="refreshTopic" xsi:type="string">kingletas.catalog_index.refresh</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="Kingletas\CatalogIndex\Model\Indexer\ProductIndexer" type="Kingletas\CatalogIndex\Model\Indexer\FamilyIndexer">
+        <arguments>
+            <argument name="family" xsi:type="string">product</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Kingletas\CatalogIndex\Model\Indexer\PriceIndexer" type="Kingletas\CatalogIndex\Model\Indexer\FamilyIndexer">
+        <arguments>
+            <argument name="family" xsi:type="string">price</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Kingletas\CatalogIndex\Model\Indexer\StockIndexer" type="Kingletas\CatalogIndex\Model\Indexer\FamilyIndexer">
+        <arguments>
+            <argument name="family" xsi:type="string">stock</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Kingletas\CatalogIndex\Model\Indexer\CategoryIndexer" type="Kingletas\CatalogIndex\Model\Indexer\FamilyIndexer">
+        <arguments>
+            <argument name="family" xsi:type="string">category</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- A full core reindex swaps tables and fires no trigger, so the documents built from them follow it. -->
+    <virtualType name="Kingletas\CatalogIndex\Plugin\Indexer\FollowPriceFullReindex" type="Kingletas\CatalogIndex\Plugin\Indexer\FollowCoreFullReindex">
+        <arguments>
+            <argument name="family" xsi:type="string">price</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Kingletas\CatalogIndex\Plugin\Indexer\FollowStockFullReindex" type="Kingletas\CatalogIndex\Plugin\Indexer\FollowCoreFullReindex">
+        <arguments>
+            <argument name="family" xsi:type="string">stock</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Catalog\Model\Indexer\Product\Price">
+        <plugin name="kingletas_catalog_index_follow_price" type="Kingletas\CatalogIndex\Plugin\Indexer\FollowPriceFullReindex"/>
+    </type>
+    <type name="Magento\CatalogInventory\Model\Indexer\Stock">
+        <plugin name="kingletas_catalog_index_follow_stock" type="Kingletas\CatalogIndex\Plugin\Indexer\FollowStockFullReindex"/>
+    </type>
+    <type name="Magento\InventoryIndexer\Indexer\InventoryIndexer">
+        <plugin name="kingletas_catalog_index_follow_inventory" type="Kingletas\CatalogIndex\Plugin\Indexer\FollowStockFullReindex"/>
+    </type>
+
+    <type name="Kingletas\CatalogIndex\Model\Update\DocumentWriter">
+        <arguments><argument name="logger" xsi:type="object">Kingletas\CatalogIndex\Logger</argument></arguments>
+    </type>
+    <type name="Kingletas\CatalogIndex\Model\Cache\TagDispatcher">
+        <arguments><argument name="logger" xsi:type="object">Kingletas\CatalogIndex\Logger</argument></arguments>
+    </type>
+    <virtualType name="Kingletas\CatalogIndex\Model\Lock\LockRunner" type="Kingletas\Foundation\Model\Lock\LockRunner">
+        <arguments><argument name="logger" xsi:type="object">Kingletas\CatalogIndex\Logger</argument></arguments>
+    </virtualType>
+    <!-- Purges and the parked-purge job share one lock, so parked tags are only ever purged by its holder. -->
+    <type name="Kingletas\CatalogIndex\Model\Cache\TagPurger">
+        <arguments>
+            <argument name="locks" xsi:type="object">Kingletas\CatalogIndex\Model\Lock\LockRunner</argument>
+            <argument name="lockName" xsi:type="string">kingletas_catalog_index_purge</argument>
+            <argument name="lockWaitSeconds" xsi:type="number">5</argument>
+        </arguments>
+    </type>
+    <type name="Kingletas\CatalogIndex\Cron\FlushParkedPurges">
+        <arguments>
+            <argument name="locks" xsi:type="object">Kingletas\CatalogIndex\Model\Lock\LockRunner</argument>
+            <argument name="lockName" xsi:type="string">kingletas_catalog_index_purge</argument>
+            <argument name="lockWaitSeconds" xsi:type="number">5</argument>
+        </arguments>
+    </type>
+    <type name="Kingletas\CatalogIndex\Model\Rebuild\FullRebuild">
+        <arguments><argument name="locks" xsi:type="object">Kingletas\CatalogIndex\Model\Lock\LockRunner</argument></arguments>
+    </type>
+    <type name="Kingletas\CatalogIndex\Queue\RefreshConsumer">
+        <arguments><argument name="logger" xsi:type="object">Kingletas\CatalogIndex\Logger</argument></arguments>
+    </type>
+    <type name="Kingletas\CatalogIndex\Model\Drift\DriftAlert">
+        <arguments><argument name="logger" xsi:type="object">Kingletas\CatalogIndex\Logger</argument></arguments>
+    </type>
+    <type name="Kingletas\CatalogIndex\Observer\FlushReadMetrics">
+        <arguments><argument name="logger" xsi:type="object">Kingletas\CatalogIndex\Logger</argument></arguments>
+    </type>
+
+    <virtualType name="Kingletas\CatalogIndex\Logger\Handler" type="Kingletas\Logger\Handler">
+        <arguments>
+            <argument name="fileName" xsi:type="string">catalog-index.log</argument>
+            <argument name="subDirectory" xsi:type="string">kingletas</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Kingletas\CatalogIndex\Logger" type="Kingletas\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">kingletas_catalog_index</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">Kingletas\CatalogIndex\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Command names are wiring, so `bin/rebrand` rewrites them; every bin/magento run builds these, so their work is proxied. -->
+    <type name="Kingletas\CatalogIndex\Console\Command\StatusCommand">
+        <arguments>
+            <argument name="name" xsi:type="string">kingletas:catalog-index:status</argument>
+            <argument name="reporter" xsi:type="object">Kingletas\CatalogIndex\Model\Status\StatusReporter\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Kingletas\CatalogIndex\Console\Command\RebuildCommand">
+        <arguments>
+            <argument name="name" xsi:type="string">kingletas:catalog-index:rebuild</argument>
+            <argument name="fullRebuild" xsi:type="object">Kingletas\CatalogIndex\Model\Rebuild\FullRebuild\Proxy</argument>
+            <argument name="refreshers" xsi:type="object">Kingletas\CatalogIndex\Model\Update\RefresherPool\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Kingletas\CatalogIndex\Console\Command\VerifyCommand">
+        <arguments>
+            <argument name="name" xsi:type="string">kingletas:catalog-index:verify</argument>
+            <argument name="verifier" xsi:type="object">Kingletas\CatalogIndex\Model\Drift\DriftVerifier\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Kingletas\CatalogIndex\Console\Command\InspectCommand">
+        <arguments>
+            <argument name="name" xsi:type="string">kingletas:catalog-index:inspect</argument>
+            <argument name="builder" xsi:type="object">Kingletas\CatalogIndex\Model\Build\ProductDocumentBuilder\Proxy</argument>
+            <argument name="store" xsi:type="object">Kingletas\CatalogIndex\Model\OpenSearch\OpenSearchDocumentStore\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="kingletas_catalog_index_status" xsi:type="object">Kingletas\CatalogIndex\Console\Command\StatusCommand</item>
+                <item name="kingletas_catalog_index_rebuild" xsi:type="object">Kingletas\CatalogIndex\Console\Command\RebuildCommand</item>
+                <item name="kingletas_catalog_index_verify" xsi:type="object">Kingletas\CatalogIndex\Console\Command\VerifyCommand</item>
+                <item name="kingletas_catalog_index_inspect" xsi:type="object">Kingletas\CatalogIndex\Console\Command\InspectCommand</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Config\Model\Config\TypePool">
+        <arguments>
+            <argument name="sensitive" xsi:type="array">
+                <item name="kingletas_catalog_index/connection/password" xsi:type="string">1</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--
+        These lists belong to other modules and are declared globally there. An area file would replace the
+        whole array rather than add to it, which would delete Magento's own handlers, so they are declared here.
+    -->
+    <!-- A product or category page's own entity reads its attribute values from its document. -->
+    <type name="Magento\Framework\EntityManager\Operation\AttributePool">
+        <arguments>
+            <argument name="extensionActions" xsi:type="array">
+                <item name="eav" xsi:type="array">
+                    <item name="Magento\Catalog\Api\Data\ProductInterface" xsi:type="array">
+                        <item name="read" xsi:type="string">Kingletas\CatalogIndex\Model\Read\Entity\ProductAttributeReader</item>
+                    </item>
+                    <item name="Magento\Catalog\Api\Data\CategoryInterface" xsi:type="array">
+                        <item name="read" xsi:type="string">Kingletas\CatalogIndex\Model\Read\Entity\CategoryAttributeReader</item>
+                    </item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Kingletas\CatalogIndex\Model\Read\Entity\ProductAttributeReader">
+        <arguments>
+            <argument name="databaseReader" xsi:type="object">Magento\Eav\Model\ResourceModel\ReadHandler</argument>
+        </arguments>
+    </type>
+    <type name="Kingletas\CatalogIndex\Model\Read\Entity\CategoryAttributeReader">
+        <arguments>
+            <argument name="databaseReader" xsi:type="object">Magento\Eav\Model\ResourceModel\ReadHandler</argument>
+        </arguments>
+    </type>
+
+    <!-- The gallery is already in the document, and a served product has no custom options by definition. -->
+    <type name="Magento\Framework\EntityManager\Operation\ExtensionPool">
+        <arguments>
+            <argument name="extensionActions" xsi:type="array">
+                <item name="Magento\Catalog\Api\Data\ProductInterface" xsi:type="array">
+                    <item name="read" xsi:type="array">
+                        <item name="optionReader" xsi:type="string">Kingletas\CatalogIndex\Model\Read\Entity\ServedOptionReader</item>
+                        <item name="mediaGalleryRead" xsi:type="string">Kingletas\CatalogIndex\Model\Read\Entity\ServedGalleryReader</item>
+                    </item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="Kingletas\CatalogIndex\Model\Read\Entity\ServedOptionReader" type="Kingletas\CatalogIndex\Model\Read\Entity\ServedProductExtension">
+        <arguments>
+            <argument name="databaseReader" xsi:type="object">Magento\Catalog\Model\Product\Option\ReadHandler</argument>
+            <argument name="servedData" xsi:type="array">
+                <item name="options" xsi:type="array"/>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Kingletas\CatalogIndex\Model\Read\Entity\ServedGalleryReader" type="Kingletas\CatalogIndex\Model\Read\Entity\ServedProductExtension">
+        <arguments>
+            <argument name="databaseReader" xsi:type="object">Magento\Catalog\Model\Product\Gallery\ReadHandler</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- GraphQL product queries mark their collection through the same composite Magento uses. -->
+    <type name="Magento\CatalogGraphQl\Model\Resolver\Products\DataProvider\Product\CompositeCollectionProcessor">
+        <arguments>
+            <argument name="collectionProcessors" xsi:type="array">
+                <item name="kingletas_catalog_index" xsi:type="object">Kingletas\CatalogIndex\Model\GraphQl\MarkDocumentCollection</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

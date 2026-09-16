@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="index">
+        <job name="kingletas_catalog_index_schedule" instance="Kingletas\CatalogIndex\Cron\RunSchedule" method="execute">
+            <schedule>* * * * *</schedule>
+        </job>
+        <job name="kingletas_catalog_index_reservations" instance="Kingletas\CatalogIndex\Cron\SweepReservations" method="execute">
+            <schedule>* * * * *</schedule>
+        </job>
+        <job name="kingletas_catalog_index_parked_purges" instance="Kingletas\CatalogIndex\Cron\FlushParkedPurges" method="execute">
+            <schedule>* * * * *</schedule>
+        </job>
+        <job name="kingletas_catalog_index_drift" instance="Kingletas\CatalogIndex\Cron\VerifyDrift" method="execute">
+            <schedule>17 * * * *</schedule>
+        </job>
+    </group>
+</config>

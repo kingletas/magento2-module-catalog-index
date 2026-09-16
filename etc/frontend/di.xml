@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Magento asks for a configurable's options once per super attribute per product; a document answers instead. -->
+    <preference for="Magento\ConfigurableProduct\Model\AttributeOptionProviderInterface"
+                type="Kingletas\CatalogIndex\Model\Read\Configurable\DocumentAttributeOptionProvider"/>
+
+    <!-- The resource model takes this provider as an argument, so a preference on the interface never reaches it. -->
+    <type name="Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable">
+        <arguments>
+            <argument name="attributeOptionProvider" xsi:type="object">Kingletas\CatalogIndex\Model\Read\Configurable\DocumentAttributeOptionProvider\Proxy</argument>
+        </arguments>
+    </type>
+
+    <!-- Only the storefront asks for these, and only when a page actually renders a configurable's swatches. -->
+    <type name="Magento\ConfigurableProduct\Model\Product\Type\Configurable">
+        <plugin name="kingletas_catalog_index_seed_configurable_attributes"
+                type="Kingletas\CatalogIndex\Plugin\Configurable\SeedConfigurableAttributes"/>
+    </type>
+
+    <!-- Storefront collections read documents only once one of these marks them. -->
+    <type name="Magento\Catalog\Model\Layer\Category\CollectionFilter">
+        <plugin name="kingletas_catalog_index_mark_category" type="Kingletas\CatalogIndex\Plugin\Layer\MarkCategoryListing"/>
+    </type>
+    <type name="Magento\Catalog\Model\Layer\Search\CollectionFilter">
+        <plugin name="kingletas_catalog_index_mark_search" type="Kingletas\CatalogIndex\Plugin\Layer\MarkSearchListing"/>
+    </type>
+    <type name="Magento\Catalog\Model\ResourceModel\Product\Link\Product\Collection">
+        <plugin name="kingletas_catalog_index_mark_linked" type="Kingletas\CatalogIndex\Plugin\Link\MarkLinkedCollection"/>
+    </type>
+    <type name="Magento\CatalogWidget\Block\Product\ProductsList">
+        <plugin name="kingletas_catalog_index_mark_widget" type="Kingletas\CatalogIndex\Plugin\Widget\MarkWidgetCollection"/>
+    </type>
+
+    <virtualType name="Kingletas\CatalogIndex\Observer\Read\EnterProductPage" type="Kingletas\CatalogIndex\Observer\Read\EnterEntityPage">
+        <arguments>
+            <argument name="page" xsi:type="string">product_view</argument>
+            <argument name="actions" xsi:type="array">
+                <item name="catalog_product_view" xsi:type="string">catalog_product_view</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Kingletas\CatalogIndex\Observer\Read\LeaveProductPage" type="Kingletas\CatalogIndex\Observer\Read\LeaveEntityPage">
+        <arguments>
+            <argument name="page" xsi:type="string">product_view</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Kingletas\CatalogIndex\Observer\Read\EnterCategoryPage" type="Kingletas\CatalogIndex\Observer\Read\EnterEntityPage">
+        <arguments>
+            <argument name="page" xsi:type="string">category_view</argument>
+            <argument name="actions" xsi:type="array">
+                <item name="catalog_category_view" xsi:type="string">catalog_category_view</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Kingletas\CatalogIndex\Observer\Read\LeaveCategoryPage" type="Kingletas\CatalogIndex\Observer\Read\LeaveEntityPage">
+        <arguments>
+            <argument name="page" xsi:type="string">category_view</argument>
+        </arguments>
+    </virtualType>
+</config>

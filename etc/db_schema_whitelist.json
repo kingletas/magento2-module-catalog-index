@@ -1,0 +1,38 @@
+{
+    "kingletas_catalog_index_state": {
+        "column": {
+            "state_key": true,
+            "state_value": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "kingletas_catalog_index_schedule": {
+        "column": {
+            "schedule_id": true,
+            "family": true,
+            "entity_id": true,
+            "scope_id": true,
+            "due_at": true
+        },
+        "index": {
+            "KINGLETAS_CATALOG_INDEX_SCHEDULE_DUE_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "KINGLETAS_CATALOG_INDEX_SCHEDULE_FAMILY_ENTITY_SCOPE_DUE": true
+        }
+    },
+    "kingletas_catalog_index_parked_purge": {
+        "column": {
+            "purge_id": true,
+            "tag": true,
+            "parked_at": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

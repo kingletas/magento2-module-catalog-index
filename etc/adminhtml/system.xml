@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="kingletas_catalog_index" translate="label" type="text" sortOrder="310"
+                 showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Catalog Index</label>
+            <tab>catalog</tab>
+            <resource>Kingletas_CatalogIndex::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1">
+                <label>General</label>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" canRestore="1">
+                    <label>Build and Keep Documents Current</label>
+                    <comment>Nothing is read from documents until a page below is also switched on.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+
+            <group id="connection" translate="label" type="text" sortOrder="20" showInDefault="1">
+                <label>OpenSearch Connection</label>
+                <field id="use_catalog_search" translate="label comment" type="select" sortOrder="10" showInDefault="1" canRestore="1">
+                    <label>Use the Catalog Search Engine Connection</label>
+                    <comment>Reuses the host, port and credentials under Catalog, Catalog Search.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="hostname" translate="label" type="text" sortOrder="20" showInDefault="1" canRestore="1">
+                    <label>Hostname</label>
+                    <depends>
+                        <field id="use_catalog_search">0</field>
+                    </depends>
+                </field>
+                <field id="port" translate="label" type="text" sortOrder="30" showInDefault="1" canRestore="1">
+                    <label>Port</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <depends>
+                        <field id="use_catalog_search">0</field>
+                    </depends>
+                </field>
+                <field id="https" translate="label" type="select" sortOrder="40" showInDefault="1" canRestore="1">
+                    <label>Use HTTPS</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="use_catalog_search">0</field>
+                    </depends>
+                </field>
+                <field id="enable_auth" translate="label" type="select" sortOrder="50" showInDefault="1" canRestore="1">
+                    <label>Enable Authentication</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="use_catalog_search">0</field>
+                    </depends>
+                </field>
+                <field id="username" translate="label" type="text" sortOrder="60" showInDefault="1" canRestore="1">
+                    <label>Username</label>
+                    <depends>
+                        <field id="use_catalog_search">0</field>
+                        <field id="enable_auth">1</field>
+                    </depends>
+                </field>
+                <field id="password" translate="label" type="obscure" sortOrder="70" showInDefault="1" canRestore="1">
+                    <label>Password</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <depends>
+                        <field id="use_catalog_search">0</field>
+                        <field id="enable_auth">1</field>
+                    </depends>
+                </field>
+                <field id="read_timeout_ms" translate="label comment" type="text" sortOrder="80" showInDefault="1" canRestore="1">
+                    <label>Page Read Timeout (ms)</label>
+                    <comment>A page waits this long before falling back to the database.</comment>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+                <field id="write_timeout" translate="label" type="text" sortOrder="90" showInDefault="1" canRestore="1">
+                    <label>Write Timeout (seconds)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+                <field id="index_prefix" translate="label comment" type="text" sortOrder="100" showInDefault="1" canRestore="1">
+                    <label>Index Prefix</label>
+                    <comment>Lowercase letters, digits, underscores and hyphens.</comment>
+                </field>
+            </group>
+
+            <group id="index" translate="label" type="text" sortOrder="30" showInDefault="1">
+                <label>Index Layout</label>
+                <field id="shards" translate="label" type="text" sortOrder="10" showInDefault="1" canRestore="1">
+                    <label>Shards</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+                <field id="replicas" translate="label" type="text" sortOrder="20" showInDefault="1" canRestore="1">
+                    <label>Replicas</label>
+                    <validate>validate-digits</validate>
+                </field>
+                <field id="keep_previous" translate="label comment" type="text" sortOrder="30" showInDefault="1" canRestore="1">
+                    <label>Previous Builds to Keep</label>
+                    <comment>Kept for rolling back an alias by hand.</comment>
+                    <validate>validate-digits</validate>
+                </field>
+            </group>
+
+            <group id="read" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Pages Served from Documents</label>
+                <field id="category_listing" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Category Product Lists</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="search_listing" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Search Result Lists</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="product_view" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Product Pages</label>
+                    <comment>Simple, virtual and configurable products without custom options. Everything else is read from the database.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="category_view" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Category Pages</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="category_tree" translate="label comment" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Category Menus, Breadcrumbs and Filters</label>
+                    <comment>Fills every category list a page builds, including the top menu and the layered navigation counts.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="configurable_options" translate="label comment" type="select" sortOrder="47" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Configurable Swatches and Options</label>
+                    <comment>Answers the option query Magento runs once per swatch attribute per product. Leave this off when a website uses a stock other than the default one and the store hides out of stock products, because Magento Inventory filters those options by salability there.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="configurable_attributes" translate="label comment" type="select" sortOrder="48" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Configurable Attribute Rows</label>
+                    <comment>Answers the two queries Magento runs once per configurable product to learn which attributes tell its variants apart, and what to call them in this store.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="linked_products" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Related, Up-sell and Cross-sell Blocks</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="widget" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>CMS Product List Widgets</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="graphql" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>GraphQL Product Queries</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="breaker_failures" translate="label" type="text" sortOrder="90" showInDefault="1" canRestore="1">
+                    <label>Failures Before Pausing Reads</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+                <field id="breaker_cooldown" translate="label" type="text" sortOrder="100" showInDefault="1" canRestore="1">
+                    <label>Pause Length (seconds)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+            </group>
+
+            <group id="updates" translate="label" type="text" sortOrder="50" showInDefault="1">
+                <label>Updates</label>
+                <field id="mode" translate="label comment" type="select" sortOrder="10" showInDefault="1" canRestore="1">
+                    <label>Update Mode</label>
+                    <comment>Queue sends refreshes to the consumers. Inline refreshes small batches in the request that caused them, never at checkout. Schedule leaves saves to the change log.</comment>
+                    <source_model>Kingletas\CatalogIndex\Model\Config\Source\UpdateMode</source_model>
+                </field>
+                <field id="inline_limit" translate="label" type="text" sortOrder="20" showInDefault="1" canRestore="1">
+                    <label>Largest Inline Refresh</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+                <field id="batch_size" translate="label" type="text" sortOrder="30" showInDefault="1" canRestore="1">
+                    <label>Documents per Batch</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+            </group>
+
+            <group id="purge" translate="label" type="text" sortOrder="60" showInDefault="1">
+                <label>Cache Purging</label>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" canRestore="1">
+                    <label>Purge Changed Pages by Tag</label>
+                    <comment>Never flushes the whole cache.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="low_stock_threshold" translate="label comment" type="text" sortOrder="20" showInDefault="1" canRestore="1">
+                    <label>Low Stock Threshold</label>
+                    <comment>Purge a product page when salable quantity crosses this. 0 purges only when a product becomes buyable or stops being buyable.</comment>
+                    <validate>validate-number</validate>
+                </field>
+            </group>
+
+            <group id="staging" translate="label" type="text" sortOrder="70" showInDefault="1">
+                <label>Scheduled Content Updates</label>
+                <field id="mode" translate="label comment" type="select" sortOrder="10" showInDefault="1" canRestore="1">
+                    <label>Watch Scheduled Updates</label>
+                    <comment>Automatic watches them when content staging is installed.</comment>
+                    <source_model>Kingletas\CatalogIndex\Model\Config\Source\StagingMode</source_model>
+                </field>
+            </group>
+
+            <group id="schedule" translate="label" type="text" sortOrder="80" showInDefault="1">
+                <label>Dated Values</label>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" canRestore="1">
+                    <label>Rebuild When Dated Values Start or End</label>
+                    <comment>Special prices, new-from dates and custom design dates.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+
+            <group id="drift" translate="label" type="text" sortOrder="90" showInDefault="1">
+                <label>Drift Check</label>
+                <field id="sample_size" translate="label" type="text" sortOrder="10" showInDefault="1" canRestore="1">
+                    <label>Products Sampled per Store View</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+                <field id="alert_ratio" translate="label comment" type="text" sortOrder="20" showInDefault="1" canRestore="1">
+                    <label>Warn Above This Share Drifted</label>
+                    <comment>0.02 warns when more than 2% of the sample differed.</comment>
+                    <validate>validate-number</validate>
+                </field>
+            </group>
+
+            <group id="metrics" translate="label" type="text" sortOrder="100" showInDefault="1">
+                <label>Read Metrics</label>
+                <field id="fallback_budget" translate="label comment" type="text" sortOrder="10" showInDefault="1" canRestore="1">
+                    <label>Fallback Budget</label>
+                    <comment>The status command marks a page over budget above this share of database reads.</comment>
+                    <validate>validate-number</validate>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

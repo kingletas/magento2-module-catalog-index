@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="kingletas_catalog_index_state" resource="default" engine="innodb"
+           comment="Catalog index builds and sweep watermarks">
+        <column xsi:type="varchar" name="state_key" length="190" nullable="false" comment="State key"/>
+        <column xsi:type="text" name="state_value" nullable="false" comment="JSON value"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Last written"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="state_key"/>
+        </constraint>
+    </table>
+    <table name="kingletas_catalog_index_schedule" resource="default" engine="innodb"
+           comment="Catalog index documents due for a rebuild at a known moment">
+        <column xsi:type="int" name="schedule_id" unsigned="true" nullable="false" identity="true" comment="Schedule id"/>
+        <column xsi:type="varchar" name="family" length="16" nullable="false" comment="Document family"/>
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" comment="Entity id"/>
+        <column xsi:type="int" name="scope_id" unsigned="true" nullable="false" comment="Store view or website id"/>
+        <column xsi:type="int" name="due_at" unsigned="true" nullable="false" comment="Unix time the rebuild is due"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="schedule_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="KINGLETAS_CATALOG_INDEX_SCHEDULE_FAMILY_ENTITY_SCOPE_DUE">
+            <column name="family"/>
+            <column name="entity_id"/>
+            <column name="scope_id"/>
+            <column name="due_at"/>
+        </constraint>
+        <index referenceId="KINGLETAS_CATALOG_INDEX_SCHEDULE_DUE_AT" indexType="btree">
+            <column name="due_at"/>
+        </index>
+    </table>
+    <table name="kingletas_catalog_index_parked_purge" resource="default" engine="innodb"
+           comment="Catalog index cache tags waiting for the purge lock">
+        <column xsi:type="int" name="purge_id" unsigned="true" nullable="false" identity="true" comment="Purge id"/>
+        <column xsi:type="varchar" name="tag" length="255" nullable="false" comment="Cache tag"/>
+        <column xsi:type="timestamp" name="parked_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="When the tag was parked"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="purge_id"/>
+        </constraint>
+    </table>
+</schema>

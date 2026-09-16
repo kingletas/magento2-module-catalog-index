@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!--
+    Magento treats an omitted is_synchronous as true, which would run the consumer inside the publishing request.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Communication/etc/communication.xsd">
+    <topic name="kingletas.catalog_index.priority" request="string" is_synchronous="false"/>
+    <topic name="kingletas.catalog_index.refresh" request="string" is_synchronous="false"/>
+</config>

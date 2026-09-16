@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!--
+    Attribute tables join on row_id where content staging is installed, so they use a subscription that resolves the entity id.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Mview/etc/mview.xsd">
+    <view id="kingletas_catalog_index_product" class="Kingletas\CatalogIndex\Model\Indexer\ProductIndexer" group="indexer">
+        <subscriptions>
+            <table name="catalog_product_entity" entity_column="entity_id"/>
+            <table name="catalog_product_entity_datetime" entity_column="entity_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\LinkFieldSubscription"/>
+            <table name="catalog_product_entity_decimal" entity_column="entity_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\LinkFieldSubscription"/>
+            <table name="catalog_product_entity_int" entity_column="entity_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\LinkFieldSubscription"/>
+            <table name="catalog_product_entity_text" entity_column="entity_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\LinkFieldSubscription"/>
+            <table name="catalog_product_entity_varchar" entity_column="entity_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\LinkFieldSubscription"/>
+            <table name="catalog_product_entity_tier_price" entity_column="entity_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\LinkFieldSubscription"/>
+            <table name="catalog_product_entity_media_gallery_value" entity_column="entity_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\LinkFieldSubscription"/>
+            <table name="catalog_product_entity_media_gallery_value_to_entity" entity_column="entity_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\LinkFieldSubscription"/>
+            <table name="catalog_category_product" entity_column="product_id"/>
+            <table name="catalog_product_website" entity_column="product_id"/>
+            <table name="catalog_product_super_link" entity_column="product_id"/>
+            <table name="catalog_product_relation" entity_column="child_id"/>
+            <table name="catalog_url_rewrite_product_category" entity_column="product_id"/>
+            <table name="review_entity_summary" entity_column="entity_pk_value"/>
+        </subscriptions>
+    </view>
+    <view id="kingletas_catalog_index_price" class="Kingletas\CatalogIndex\Model\Indexer\PriceIndexer" group="indexer">
+        <subscriptions>
+            <table name="catalog_product_index_price" entity_column="entity_id"/>
+        </subscriptions>
+    </view>
+    <view id="kingletas_catalog_index_stock" class="Kingletas\CatalogIndex\Model\Indexer\StockIndexer" group="indexer">
+        <subscriptions>
+            <table name="cataloginventory_stock_item" entity_column="product_id"/>
+            <table name="cataloginventory_stock_status" entity_column="product_id"/>
+        </subscriptions>
+    </view>
+    <view id="kingletas_catalog_index_category" class="Kingletas\CatalogIndex\Model\Indexer\CategoryIndexer" group="indexer">
+        <subscriptions>
+            <table name="catalog_category_entity" entity_column="entity_id"/>
+            <table name="catalog_category_entity_datetime" entity_column="entity_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\CategoryLinkFieldSubscription"/>
+            <table name="catalog_category_entity_decimal" entity_column="entity_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\CategoryLinkFieldSubscription"/>
+            <table name="catalog_category_entity_int" entity_column="entity_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\CategoryLinkFieldSubscription"/>
+            <table name="catalog_category_entity_text" entity_column="entity_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\CategoryLinkFieldSubscription"/>
+            <table name="catalog_category_entity_varchar" entity_column="entity_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\CategoryLinkFieldSubscription"/>
+        </subscriptions>
+    </view>
+</config>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!--
+    No connection is named, so the store's default decides: RabbitMQ when env.php configures it, the database otherwise.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:MessageQueue/etc/publisher.xsd">
+    <publisher topic="kingletas.catalog_index.priority"/>
+    <publisher topic="kingletas.catalog_index.refresh"/>
+</config>

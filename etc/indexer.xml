@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Indexer/etc/indexer.xsd">
+    <indexer id="kingletas_catalog_index_product" view_id="kingletas_catalog_index_product"
+             class="Kingletas\CatalogIndex\Model\Indexer\ProductIndexer">
+        <title translate="true">Catalog Index: Product Documents</title>
+        <description translate="true">Storefront product documents in OpenSearch</description>
+    </indexer>
+    <indexer id="kingletas_catalog_index_price" view_id="kingletas_catalog_index_price"
+             class="Kingletas\CatalogIndex\Model\Indexer\PriceIndexer">
+        <title translate="true">Catalog Index: Price Documents</title>
+        <description translate="true">Indexed prices per website and customer group in OpenSearch</description>
+    </indexer>
+    <indexer id="kingletas_catalog_index_stock" view_id="kingletas_catalog_index_stock"
+             class="Kingletas\CatalogIndex\Model\Indexer\StockIndexer">
+        <title translate="true">Catalog Index: Stock Documents</title>
+        <description translate="true">Display stock per website in OpenSearch</description>
+    </indexer>
+    <indexer id="kingletas_catalog_index_category" view_id="kingletas_catalog_index_category"
+             class="Kingletas\CatalogIndex\Model\Indexer\CategoryIndexer">
+        <title translate="true">Catalog Index: Category Documents</title>
+        <description translate="true">Storefront category documents in OpenSearch</description>
+    </indexer>
+</config>

@@ -1,0 +1,94 @@
+{
+    "name": "kingletas/module-catalog-index",
+    "description": "Serves category, product and search pages from OpenSearch documents kept current by change tracking, a priority stock lane and tag-precise cache purges.",
+    "type": "magento2-module",
+    "license": "OSL-3.0",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://repo.magento.com/"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kingletas/magento2-module-foundation"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kingletas/magento2-module-logger"
+        }
+    ],
+    "require": {
+        "php": ">=8.4",
+        "kingletas/module-foundation": "^2.2",
+        "kingletas/module-logger": "^3.0",
+        "magento/framework": ">=103.0",
+        "magento/module-catalog": ">=104.0",
+        "magento/module-catalog-inventory": ">=100.4",
+        "magento/module-configurable-product": ">=100.4",
+        "magento/module-customer": ">=103.0",
+        "magento/module-eav": ">=102.1",
+        "magento/module-indexer": ">=100.4",
+        "magento/module-open-search": ">=100.4",
+        "magento/module-sales": ">=103.0",
+        "magento/module-store": ">=101.1"
+    },
+    "require-dev": {
+        "magento/magento-coding-standard": ">=38 <42",
+        "magento/module-catalog-graph-ql": ">=100.4",
+        "magento/module-catalog-widget": ">=100.4",
+        "phpcompatibility/php-compatibility": "^9.3",
+        "phpmd/phpmd": "^2.15",
+        "phpstan/phpstan": "^2.0",
+        "phpunit/phpunit": "^10.5 || ^11.0",
+        "slevomat/coding-standard": "^8.15"
+    },
+    "suggest": {
+        "magento/module-inventory": "Salable quantity with reservations instead of the legacy stock status",
+        "magento/module-amqp": "Runs the refresh lanes on RabbitMQ instead of the database queue",
+        "magento/module-catalog-graph-ql": "Lets GraphQL product queries read documents",
+        "magento/module-catalog-widget": "Lets the CMS product list widget read documents"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Kingletas\\CatalogIndex\\": ""
+        },
+        "exclude-from-classmap": [
+            "/Test/"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "laminas/laminas-dependency-plugin": true,
+            "magento/*": true,
+            "php-http/discovery": true
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "lint": "find . -path ./vendor -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null",
+        "cs": "phpcs --standard=phpcs.xml.dist",
+        "cs-fix": "phpcbf --standard=phpcs.xml.dist",
+        "stan": "phpstan analyse --configuration phpstan.neon.dist --no-progress",
+        "md": "phpmd Api,Console,Cron,Exception,Model,Observer,Plugin,Queue text phpmd.xml.dist",
+        "test": "phpunit --configuration phpunit.xml.dist",
+        "test-wiring": "phpunit --configuration phpunit.xml.dist --testsuite wiring",
+        "test-behaviour": "phpunit --configuration phpunit.xml.dist --testsuite behaviour",
+        "test-performance": "phpunit --configuration phpunit.xml.dist --testsuite performance",
+        "test-unit": "phpunit --configuration phpunit.xml.dist --testsuite unit",
+        "check": [
+            "@lint",
+            "@cs",
+            "@stan",
+            "@md",
+            "@test"
+        ]
+    },
+    "scripts-descriptions": {
+        "check": "Everything the CI pull-request gate runs.",
+        "test": "Every suite this module ships. Needs M2_VENDOR pointing at a Magento installation's vendor directory."
+    }
+}

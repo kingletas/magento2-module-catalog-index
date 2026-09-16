@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:MessageQueue/etc/topology.xsd">
+    <exchange name="magento" type="topic">
+        <binding id="KingletasCatalogIndexPriorityBinding" topic="kingletas.catalog_index.priority"
+                 destinationType="queue" destination="kingletas.catalog_index.priority"/>
+        <binding id="KingletasCatalogIndexRefreshBinding" topic="kingletas.catalog_index.refresh"
+                 destinationType="queue" destination="kingletas.catalog_index.refresh"/>
+    </exchange>
+</config>

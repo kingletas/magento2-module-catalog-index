@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:MessageQueue/etc/consumer.xsd">
+    <consumer name="kingletas.catalog_index.priority"
+              queue="kingletas.catalog_index.priority"
+              maxMessages="1000"
+              handler="Kingletas\CatalogIndex\Queue\RefreshConsumer::process"/>
+    <consumer name="kingletas.catalog_index.refresh"
+              queue="kingletas.catalog_index.refresh"
+              maxMessages="200"
+              handler="Kingletas\CatalogIndex\Queue\RefreshConsumer::process"/>
+</config>
