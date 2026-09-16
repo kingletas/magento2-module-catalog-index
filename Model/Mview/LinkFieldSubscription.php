@@ -13,6 +13,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Ddl\Trigger;
 use Magento\Framework\DB\Ddl\TriggerFactory;
+use Magento\Framework\EntityManager\EntityMetadataInterface;
 use Magento\Framework\EntityManager\MetadataPool;
 use Magento\Framework\Mview\Config;
 use Magento\Framework\Mview\View\CollectionInterface;
@@ -75,14 +76,12 @@ class LinkFieldSubscription extends Subscription
      */
     protected function buildStatement(string $event, ViewInterface $view): string
     {
-        $metadata = $this->metadataPool->getMetadata($this->entityInterface());
+        $lookup = $this->entityIdLookup($event === Trigger::EVENT_DELETE ? 'OLD' : 'NEW');
 
-        if ($metadata->getLinkField() === $metadata->getIdentifierField()) {
+        if ($lookup === null) {
             return parent::buildStatement($event, $view);
         }
 
-        $row = $event === Trigger::EVENT_DELETE ? 'OLD' : 'NEW';
-        $link = $this->connection->quoteIdentifier($metadata->getLinkField());
         $changelog = $view->getChangelog();
         $insert = sprintf(
             'IF (%1$s IS NOT NULL) THEN INSERT INTO %2$s (%3$s) VALUES (%1$s); END IF;',
@@ -95,14 +94,44 @@ class LinkFieldSubscription extends Subscription
             $insert = $this->whenChanged($insert);
         }
 
+        return sprintf('SET %s = (%s);', self::VARIABLE, $lookup) . $insert;
+    }
+
+    /**
+     * The query that finds the changed row's entity id, or null when the subscribed column already holds it.
+     */
+    protected function entityIdLookup(string $row): ?string
+    {
+        $metadata = $this->metadata();
+
+        if ($metadata->getLinkField() === $metadata->getIdentifierField()) {
+            return null;
+        }
+
+        return $this->entityIdByLinkValue($row . '.' . $this->connection->quoteIdentifier($metadata->getLinkField()));
+    }
+
+    protected function entityIdByLinkValue(string $linkValue): string
+    {
+        $metadata = $this->metadata();
+
         return sprintf(
-            'SET %1$s = (SELECT %2$s FROM %3$s WHERE %4$s = %5$s.%4$s LIMIT 1);',
-            self::VARIABLE,
+            'SELECT %s FROM %s WHERE %s = %s LIMIT 1',
             $this->connection->quoteIdentifier($metadata->getIdentifierField()),
             $this->connection->quoteIdentifier($this->resourceConnection->getTableName($metadata->getEntityTable())),
-            $link,
-            $row
-        ) . $insert;
+            $this->connection->quoteIdentifier($metadata->getLinkField()),
+            $linkValue
+        );
+    }
+
+    protected function metadata(): EntityMetadataInterface
+    {
+        return $this->metadataPool->getMetadata($this->entityInterface());
+    }
+
+    protected function table(string $name): string
+    {
+        return $this->connection->quoteIdentifier($this->resourceConnection->getTableName($name));
     }
 
     private function whenChanged(string $statement): string

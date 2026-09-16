@@ -26,6 +26,10 @@
             <table name="catalog_category_product" entity_column="product_id"/>
             <table name="catalog_product_website" entity_column="product_id"/>
             <table name="catalog_product_super_link" entity_column="product_id"/>
+            <table name="catalog_product_super_attribute" entity_column="product_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\SuperAttributeSubscription"/>
+            <table name="catalog_product_super_attribute_label" entity_column="product_super_attribute_id"
+                   subscription_model="Kingletas\CatalogIndex\Model\Mview\SuperAttributeLabelSubscription"/>
             <table name="catalog_product_relation" entity_column="child_id"/>
             <table name="catalog_url_rewrite_product_category" entity_column="product_id"/>
             <table name="review_entity_summary" entity_column="entity_pk_value"/>

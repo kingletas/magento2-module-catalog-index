@@ -13,7 +13,6 @@ use Kingletas\CatalogIndex\Model\Build\BuildContext;
 use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
 use Kingletas\CatalogIndex\Model\Build\LinkField;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Eav\Model\Config as EavConfig;
 use Magento\Framework\App\ResourceConnection;
@@ -21,31 +20,20 @@ use Magento\Framework\DB\Select;
 use Magento\Store\Model\Store;
 
 /**
- * A configurable product's variants and the attributes that tell them apart, loaded once per batch.
+ * A configurable product's super attributes and option rows, loaded once per batch.
  */
-class VariantFieldProvider extends AbstractFieldProvider
+class ConfigurableFieldProvider extends AbstractFieldProvider
 {
-    /** @var array<int, int[]> Parent link id to child entity ids. */
-    private array $children = [];
-
     /** @var array<int, array<int, array<string, mixed>>> Parent link id to attribute id to its super attribute row. */
     private array $superAttributes = [];
-
-    /** @var array<int, array<string, mixed>> Child entity id to its variant data. */
-    private array $variants = [];
 
     /** @var array<int, array<string, array<int, array<string, mixed>>>> Parent link id to attribute id to rows. */
     private array $options = [];
 
-    /**
-     * @param string[] $childAttributes Codes a listing needs from each variant beyond the super attributes.
-     */
     public function __construct(
         private readonly ResourceConnection $resourceConnection,
         private readonly LinkField $linkField,
         private readonly EavConfig $eavConfig,
-        private readonly CollectionFactory $collectionFactory,
-        private readonly array $childAttributes = [],
         int $sortOrder = 65
     ) {
         parent::__construct($sortOrder);
@@ -70,9 +58,7 @@ class VariantFieldProvider extends AbstractFieldProvider
             return;
         }
 
-        $this->loadLinks($parentLinkIds);
         $this->loadSuperAttributes($parentLinkIds, $context);
-        $this->loadVariants($context);
         $this->loadOptions($parentLinkIds, $context);
     }
 
@@ -81,9 +67,7 @@ class VariantFieldProvider extends AbstractFieldProvider
      */
     public function resetBatch(): void
     {
-        $this->children = [];
         $this->superAttributes = [];
-        $this->variants = [];
         $this->options = [];
     }
 
@@ -97,17 +81,8 @@ class VariantFieldProvider extends AbstractFieldProvider
         }
 
         $linkId = (int) $product->getData($this->linkField->product());
-        $variants = [];
-
-        foreach ($this->children[$linkId] ?? [] as $childId) {
-            if (isset($this->variants[$childId])) {
-                $variants[] = $this->variants[$childId];
-            }
-        }
-
         $superAttributes = array_values($this->superAttributes[$linkId] ?? []);
         $draft->set('super_attributes', $superAttributes, DocumentDraft::GROUP_LISTING);
-        $draft->set('variants', $variants, DocumentDraft::GROUP_LISTING);
         $draft->set('configurable_options', $this->options[$linkId] ?? [], DocumentDraft::GROUP_LISTING);
     }
 
@@ -248,27 +223,6 @@ class VariantFieldProvider extends AbstractFieldProvider
     }
 
     /**
-     * @param int[] $parentLinkIds
-     */
-    private function loadLinks(array $parentLinkIds): void
-    {
-        $connection = $this->resourceConnection->getConnection();
-        $rows = $connection->fetchAll(
-            $connection->select()
-                ->from(
-                    $this->resourceConnection->getTableName('catalog_product_super_link'),
-                    ['parent_id', 'product_id']
-                )
-                ->where('parent_id IN (?)', $parentLinkIds)
-                ->order('product_id ASC')
-        );
-
-        foreach ($rows as $row) {
-            $this->children[(int) $row['parent_id']][] = (int) $row['product_id'];
-        }
-    }
-
-    /**
      * One query for every parent in the batch, carrying the store label Magento asks for separately per product.
      *
      * @param int[] $parentLinkIds
@@ -313,41 +267,6 @@ class VariantFieldProvider extends AbstractFieldProvider
                 'super_attribute_id' => (int) $row['product_super_attribute_id'],
                 'label' => $row['label'] === null ? null : (string) $row['label'],
                 'use_default' => $row['use_default'] === null ? null : (int) $row['use_default'],
-            ];
-        }
-    }
-
-    private function loadVariants(BuildContext $context): void
-    {
-        $childIds = array_values(array_unique(array_merge([], ...array_values($this->children))));
-
-        if ($childIds === []) {
-            return;
-        }
-
-        $codes = array_values(array_unique(array_merge(
-            $this->childAttributes,
-            array_column(array_merge([], ...array_values($this->superAttributes)), 'code')
-        )));
-        $collection = $this->collectionFactory->create();
-        $collection->setStoreId($context->storeId);
-        $collection->addIdFilter($childIds);
-        $collection->addAttributeToSelect($codes);
-        $collection->setFlag('has_stock_status_filter', true);
-
-        foreach ($collection->getItems() as $child) {
-            $attributes = [];
-
-            foreach ($codes as $code) {
-                $attributes[$code] = $child->getData($code);
-            }
-
-            $childId = (int) $child->getData('entity_id');
-            $this->variants[$childId] = [
-                'entity_id' => $childId,
-                'sku' => (string) $child->getData('sku'),
-                'type_id' => (string) $child->getData('type_id'),
-                'attributes' => $attributes,
             ];
         }
     }

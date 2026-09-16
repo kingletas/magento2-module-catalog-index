@@ -49,7 +49,13 @@ The module has run on Magento Open Source 2.4.8-p2 and Adobe Commerce 2.4.8-p2 i
 | Adobe Commerce | Run on a store | Expected |
 | Mage-OS, on the same framework | Expected | Expected |
 
-**Run on a store** means installed, rebuilt and served pages on 2.4.8-p2 in production mode. **Source read** means the hooks, signatures and trigger shape the module relies on were checked in that release's code: Open Source 2.4.9 (framework 103.0.9), where the suites run, and Adobe Commerce 2.4.8-p2, for the staging trigger. **Expected** means the same classes and methods exist in Magento's public history for that line and nothing suggests they changed, but nobody has opened that release's code or run the module on it. 2.4.6 and 2.4.7 are not supported: the module needs PHP 8.4, and Magento supports it from 2.4.8.
+**Run on a store** means installed, rebuilt and served pages on 2.4.8-p2 in production mode.
+
+**Source read** means the hooks, signatures and trigger shape the module relies on were checked in that release's code: Open Source 2.4.9 (framework 103.0.9), where the suites run, and Adobe Commerce 2.4.8-p2, for the staging trigger.
+
+**Expected** means the same classes and methods exist in Magento's public history for that line and nothing suggests they've changed, but nobody has opened that release's code or run the module on it.
+
+2.4.6 and 2.4.7 aren't supported. The module needs PHP 8.4, and Magento supports it from 2.4.8.
 
 | Feature | Behaviour |
 | --- | --- |
@@ -57,7 +63,7 @@ The module has run on Magento Open Source 2.4.8-p2 and Adobe Commerce 2.4.8-p2 i
 | Multi-source inventory | Detected. Salable quantity reads the stock index table and subtracts reservations; without it the legacy stock status is read |
 | Catalog permissions | Every event it listens to still fires: the listing collection's load events, `catalog_controller_product_init_after`, `catalog_controller_category_init_after`, and `catalog_product_is_salable_after`, because hydration never sets `salable` itself. Read from Adobe Commerce 2.4.8-p2's event configuration, not yet run |
 | B2B shared catalog | Not verified. Leave product pages switched off on a B2B store until checked |
-| OpenSearch | Required, through `Magento_OpenSearch` and the client it builds. A store on Elasticsearch 8 would need a second gateway, which is not written |
+| OpenSearch | Required, through `Magento_OpenSearch` and the client it builds. A store on Elasticsearch 8 would need a second gateway, which isn't written |
 | RabbitMQ | Used when it is the store's default queue connection; the database queue otherwise |
 | Varnish, built-in page cache | Purged through `clean_cache_by_tags`, which both listen to |
 | Fastly | Its extension is expected to listen to the same event; not checked |
@@ -74,6 +80,8 @@ The module changes no template. It fills the same `Product` and `Category` objec
 
 ## Deliberately left to the database
 
+These surfaces won't read documents, even with every switch on.
+
 | Surface | Why |
 | --- | --- |
 | Add to cart, cart, checkout, order placement | They decide money and stock |
@@ -87,4 +95,4 @@ The module changes no template. It fills the same `Product` and `Category` objec
 - GraphQL `categoryList` and `categories` from category documents
 - Listing results, filters and facets queried from the product index directly, so a listing makes no MySQL query at all
 - An integration suite that runs the read paths against a real store
-- **The salability count a configurable listing runs, one per product.** It is the largest single piece of database work left on that page. It is not answered here, because the only seam that keeps the events catalog permissions depends on is an around plugin on `Configurable::isSalable`.
+- **The salability count a configurable listing runs, one per product.** It's the largest single piece of database work left on that page. It isn't answered here, because the only seam that keeps the events catalog permissions depends on is an around plugin on `Configurable::isSalable`.

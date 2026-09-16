@@ -18,7 +18,7 @@ use Kingletas\CatalogIndex\Model\Build\Field\MediaFieldProvider;
 use Kingletas\CatalogIndex\Model\Build\Field\ReviewFieldProvider;
 use Kingletas\CatalogIndex\Model\Build\Field\TierPriceFieldProvider;
 use Kingletas\CatalogIndex\Model\Build\Field\UrlFieldProvider;
-use Kingletas\CatalogIndex\Model\Build\Field\VariantFieldProvider;
+use Kingletas\CatalogIndex\Model\Build\Field\ConfigurableFieldProvider;
 use Kingletas\CatalogIndex\Model\Build\FingerprintCalculator;
 use Kingletas\CatalogIndex\Model\Build\LinkField;
 use Kingletas\CatalogIndex\Model\Build\ProductDocumentBuilder;
@@ -124,7 +124,7 @@ class BuildCostTest extends TestCase
             'url' => new UrlFieldProvider($resource),
             'media' => new MediaFieldProvider($resource, $link, $eav),
             'tier' => new TierPriceFieldProvider($resource, $link),
-            'variants' => new VariantFieldProvider($resource, $link, $eav, $factory, ['name']),
+            'configurable' => new ConfigurableFieldProvider($resource, $link, $eav),
             'reviews' => new ReviewFieldProvider($resource),
             'options' => new CustomOptionFieldProvider($resource, $link),
         ]);
