@@ -42,7 +42,7 @@ class OpenSearchDocumentStoreTest extends TestCase
         $this->assertSame(['sku' => 'A/B'], $params['body'][1]);
         $this->assertInstanceOf(stdClass::class, $params['body'][3]);
         $this->assertSame(30.0, $params['client']['timeout']);
-        $this->assertSame(['1', '2'], $result->written);
+        $this->assertSame(['1', '2'], $result->getWritten());
     }
 
     public function testADeleteCarriesTheVersionItDeletesAt(): void
@@ -55,7 +55,7 @@ class OpenSearchDocumentStoreTest extends TestCase
             ['delete' => $this->meta('7', 60)],
             $this->sent[0][1]['body'][0]
         );
-        $this->assertSame(['7'], $result->written);
+        $this->assertSame(['7'], $result->getWritten());
     }
 
     public function testAnEmptyWriteSendsNothing(): void

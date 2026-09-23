@@ -4,6 +4,9 @@
 # allowed to pass vacuously.
 parameters:
     level: 6
+    phpVersion:
+        min: 80400
+        max: 80499
     # Registers the on-demand generator, so a Factory that only exists
     # after `setup:di:compile` resolves here too.
     bootstrapFiles:
@@ -17,6 +20,7 @@ parameters:
         - Observer
         - Plugin
         - Queue
+        - Setup
     excludePaths:
         - Test/*
     treatPhpDocTypesAsCertain: false

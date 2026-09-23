@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Drift;
 
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
 use Kingletas\CatalogIndex\Model\Build\BuildBatch;
-use Kingletas\CatalogIndex\Model\Build\BuildContext;
 use Kingletas\CatalogIndex\Model\Build\ProductDocumentBuilder;
 use Kingletas\CatalogIndex\Model\Build\VersionSource;
 use Kingletas\CatalogIndex\Model\Drift\DriftReport;
@@ -19,10 +19,10 @@ use Kingletas\CatalogIndex\Model\Index\IndexNamer;
 use Kingletas\CatalogIndex\Model\Index\ScopeResolver;
 use Kingletas\CatalogIndex\Model\Store\Document;
 use Kingletas\CatalogIndex\Model\Update\ProductRefresher;
-use Kingletas\Foundation\Test\Support\FakeClock;
 use Kingletas\CatalogIndex\Test\Support\InMemoryDocumentStore;
 use Kingletas\CatalogIndex\Test\Support\ShippedConfig;
 use Kingletas\CatalogIndex\Test\Support\StubbedDatabase;
+use Kingletas\Foundation\Test\Support\FakeClock;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -86,9 +86,9 @@ class DriftVerifierTest extends TestCase
         $builder = $this->createMock(ProductDocumentBuilder::class);
         $builder->method('build')->willReturnCallback(static fn (
             array $ids,
-            BuildContext $context
+            BuildContextInterface $context
         ): BuildBatch => new BuildBatch(
-            $context->version,
+            $context->getVersion(),
             array_map(
                 static fn (int $id): Document => new Document((string) $id, 1, ['_fp' => ['listing' => 'same']]),
                 array_values(array_intersect($ids, [1, 2, 3]))

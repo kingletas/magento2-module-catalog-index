@@ -9,16 +9,51 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\PageType;
+use Kingletas\CatalogIndex\Api\Data\ReadContextInterface;
+
 /**
  * Who a page is being built for.
  */
-class ReadContext
+class ReadContext implements ReadContextInterface
 {
     public function __construct(
-        public readonly PageType $page,
-        public readonly int $storeId,
-        public readonly int $websiteId,
-        public readonly int $customerGroupId
+        private readonly PageType $page,
+        private readonly int $storeId,
+        private readonly int $websiteId,
+        private readonly int $customerGroupId
     ) {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPage(): PageType
+    {
+        return $this->page;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getStoreId(): int
+    {
+        return $this->storeId;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getWebsiteId(): int
+    {
+        return $this->websiteId;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCustomerGroupId(): int
+    {
+        return $this->customerGroupId;
     }
 }

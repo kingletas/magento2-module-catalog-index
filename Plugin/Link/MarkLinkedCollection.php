@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Plugin\Link;
 
 use Kingletas\CatalogIndex\Model\Read\PageScope;
-use Kingletas\CatalogIndex\Model\Read\PageType;
+use Kingletas\CatalogIndex\Api\Data\PageType;
 use Magento\Catalog\Model\ResourceModel\Product\Link\Product\Collection;
 
 /**

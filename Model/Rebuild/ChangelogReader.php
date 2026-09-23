@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Rebuild;
 
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Magento\Framework\Mview\ViewInterfaceFactory;
 
 /**

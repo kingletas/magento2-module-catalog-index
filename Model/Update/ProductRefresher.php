@@ -10,17 +10,18 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Model\Update;
 
 use Kingletas\CatalogIndex\Api\CachePurgerInterface;
-use Kingletas\Foundation\Api\ClockInterface;
+use Kingletas\CatalogIndex\Api\Data\ChangeSetInterface;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Api\RefresherInterface;
 use Kingletas\CatalogIndex\Model\Build\BuildContext;
 use Kingletas\CatalogIndex\Model\Build\ProductDocumentBuilder;
 use Kingletas\CatalogIndex\Model\Build\VersionSource;
 use Kingletas\CatalogIndex\Model\Cache\PurgePlanner;
 use Kingletas\CatalogIndex\Model\Config;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\IndexNamer;
 use Kingletas\CatalogIndex\Model\Index\ScopeResolver;
 use Kingletas\CatalogIndex\Model\Schedule\ScheduleStorage;
+use Kingletas\Foundation\Api\ClockInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\ScopeInterface;
 
@@ -78,7 +79,7 @@ class ProductRefresher implements RefresherInterface
     /**
      * @inheritDoc
      */
-    public function refreshInto(array $ids, int $scopeId, string $writeIndex, string $compareIndex): ChangeSet
+    public function refreshInto(array $ids, int $scopeId, string $writeIndex, string $compareIndex): ChangeSetInterface
     {
         $version = $this->versions->next();
         $context = new BuildContext(

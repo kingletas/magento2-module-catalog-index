@@ -11,9 +11,10 @@ namespace Kingletas\CatalogIndex\Test\Unit\Model\Build;
 
 use DateTimeImmutable;
 use InvalidArgumentException;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Kingletas\CatalogIndex\Api\FieldProviderInterface;
 use Kingletas\CatalogIndex\Model\Build\BuildContext;
-use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
 use Kingletas\CatalogIndex\Model\Build\FingerprintCalculator;
 use Kingletas\CatalogIndex\Model\Build\ProductDocumentBuilder;
 use Kingletas\CatalogIndex\Test\Support\ProductDoubles;
@@ -128,9 +129,9 @@ class ProductDocumentBuilderTest extends TestCase
             $this->events[] = 'reset:' . $name;
         });
         $provider->method('contribute')->willReturnCallback(
-            function (Product $product, DocumentDraft $draft) use ($name, $excludeId, $refreshAt): void {
+            function (Product $product, DocumentDraftInterface $draft) use ($name, $excludeId, $refreshAt): void {
                 $this->events[] = 'contribute:' . $name . ':' . $product->getId();
-                $draft->set($name, $name, DocumentDraft::GROUP_LISTING);
+                $draft->set($name, $name, DocumentDraftInterface::GROUP_LISTING);
 
                 if ((int) $product->getId() === $excludeId) {
                     $draft->exclude('disabled');
@@ -145,7 +146,7 @@ class ProductDocumentBuilderTest extends TestCase
         return $provider;
     }
 
-    private function context(): BuildContext
+    private function context(): BuildContextInterface
     {
         return new BuildContext(1, 1, 10, new DateTimeImmutable('2026-09-15 12:00:00'));
     }

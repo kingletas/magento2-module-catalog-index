@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Index;
 
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Config;
 
 /**

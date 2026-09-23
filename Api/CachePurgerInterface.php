@@ -11,6 +11,8 @@ namespace Kingletas\CatalogIndex\Api;
 
 /**
  * Removes cached pages and blocks carrying any of the given tags, and never flushes everything.
+ *
+ * @api
  */
 interface CachePurgerInterface
 {

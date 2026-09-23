@@ -9,27 +9,29 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Api;
 
+use Kingletas\CatalogIndex\Api\Data\CategoryViewInterface;
+use Kingletas\CatalogIndex\Api\Data\ProductViewInterface;
+use Kingletas\CatalogIndex\Api\Data\ReadContextInterface;
 use Kingletas\CatalogIndex\Exception\DocumentStoreException;
-use Kingletas\CatalogIndex\Model\Read\CategoryView;
-use Kingletas\CatalogIndex\Model\Read\ProductView;
-use Kingletas\CatalogIndex\Model\Read\ReadContext;
 
 /**
  * Reads what a storefront page needs from documents.
+ *
+ * @api
  */
 interface DocumentReaderInterface
 {
     /**
      * @param int[] $productIds
-     * @return array<int, ProductView> Keyed by product id; products without a document omitted.
+     * @return array<int, ProductViewInterface> Keyed by product id; products without a document omitted.
      * @throws DocumentStoreException
      */
-    public function products(array $productIds, ReadContext $context): array;
+    public function products(array $productIds, ReadContextInterface $context): array;
 
     /**
      * @param int[] $categoryIds
-     * @return array<int, CategoryView> Keyed by category id; categories without a document omitted.
+     * @return array<int, CategoryViewInterface> Keyed by category id; categories without a document omitted.
      * @throws DocumentStoreException
      */
-    public function categories(array $categoryIds, ReadContext $context): array;
+    public function categories(array $categoryIds, ReadContextInterface $context): array;
 }

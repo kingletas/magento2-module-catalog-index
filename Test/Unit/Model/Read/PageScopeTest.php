@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Read;
 
 use Kingletas\CatalogIndex\Model\Read\PageScope;
-use Kingletas\CatalogIndex\Model\Read\PageType;
+use Kingletas\CatalogIndex\Api\Data\PageType;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

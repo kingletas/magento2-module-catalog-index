@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Build\Field;
 
-use Kingletas\CatalogIndex\Model\Build\BuildContext;
-use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\ResourceConnection;
 
@@ -32,7 +32,7 @@ class ReviewFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function prepareBatch(array $products, BuildContext $context): void
+    public function prepareBatch(array $products, BuildContextInterface $context): void
     {
         $this->summaries = [];
 
@@ -58,7 +58,7 @@ class ReviewFieldProvider extends AbstractFieldProvider
                     []
                 )
                 ->where('t.entity_code = ?', 'product')
-                ->where('s.store_id = ?', $context->storeId)
+                ->where('s.store_id = ?', $context->getStoreId())
                 ->where('s.entity_pk_value IN (?)', array_keys($products))
         );
 
@@ -81,14 +81,14 @@ class ReviewFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function contribute(Product $product, DocumentDraft $draft, BuildContext $context): void
+    public function contribute(Product $product, DocumentDraftInterface $draft, BuildContextInterface $context): void
     {
         if ($draft->isExcluded()) {
             return;
         }
 
         $summary = $this->summaries[(int) $product->getId()] ?? ['rating_summary' => 0, 'reviews_count' => 0];
-        $draft->set('rating_summary', $summary['rating_summary'], DocumentDraft::GROUP_LISTING);
-        $draft->set('reviews_count', $summary['reviews_count'], DocumentDraft::GROUP_LISTING);
+        $draft->set('rating_summary', $summary['rating_summary'], DocumentDraftInterface::GROUP_LISTING);
+        $draft->set('reviews_count', $summary['reviews_count'], DocumentDraftInterface::GROUP_LISTING);
     }
 }

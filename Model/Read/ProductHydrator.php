@@ -9,8 +9,9 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Read;
 
-use Kingletas\CatalogIndex\Model\Config;
+use Kingletas\CatalogIndex\Api\Data\ProductViewInterface;
 use Kingletas\CatalogIndex\Model\Build\LinkField;
+use Kingletas\CatalogIndex\Model\Config;
 use Kingletas\CatalogIndex\Model\Read\Configurable\ServedAttributes;
 use Kingletas\CatalogIndex\Model\Read\Configurable\ServedOptions;
 use Magento\Catalog\Model\Product;
@@ -32,7 +33,7 @@ class ProductHydrator
     /**
      * Adds what the collection did not load itself, leaving its own columns such as indexed prices as they are.
      */
-    public function fillListingItem(Product $item, ProductView $view, int $storeId): void
+    public function fillListingItem(Product $item, ProductViewInterface $view, int $storeId): void
     {
         foreach ($this->values($view) as $key => $value) {
             if (!$item->hasData($key)) {
@@ -50,7 +51,7 @@ class ProductHydrator
      * @param array<string, mixed> $entityData
      * @return array<string, mixed>
      */
-    public function detailData(ProductView $view, array $entityData, int $storeId): array
+    public function detailData(ProductViewInterface $view, array $entityData, int $storeId): array
     {
         $values = $this->values($view);
 
@@ -67,7 +68,7 @@ class ProductHydrator
     /**
      * Kept for when Magento asks, because most surfaces never do and building the collection costs a query each.
      */
-    private function rememberAttributes(ProductView $view, int $storeId): void
+    private function rememberAttributes(ProductViewInterface $view, int $storeId): void
     {
         if ($view->typeId() !== Configurable::TYPE_CODE
             || !$this->config->isConfigurableAttributesEnabled($storeId)
@@ -75,28 +76,28 @@ class ProductHydrator
             return;
         }
 
-        $this->servedAttributes->remember($view->configurable, $view->id);
+        $this->servedAttributes->remember($view->getConfigurable(), $view->getId());
     }
 
     /**
      * Magento asks its option provider by link field, which is the row id where content staging is installed.
      */
-    private function rememberOptions(ProductView $view, int $linkId, int $storeId): void
+    private function rememberOptions(ProductViewInterface $view, int $linkId, int $storeId): void
     {
         if (!$this->config->isConfigurableOptionsEnabled($storeId)) {
             return;
         }
 
-        $this->servedOptions->remember($view->configurable->options(), $linkId);
+        $this->servedOptions->remember($view->getConfigurable()->options(), $linkId);
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function values(ProductView $view): array
+    private function values(ProductViewInterface $view): array
     {
         $values = $view->attributes();
-        $values['entity_id'] = $view->id;
+        $values['entity_id'] = $view->getId();
 
         if ($view->requestPath() !== null) {
             $values['request_path'] = $view->requestPath();

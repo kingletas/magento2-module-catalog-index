@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Build\Field;
 
-use Kingletas\CatalogIndex\Model\Build\BuildContext;
-use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Kingletas\CatalogIndex\Model\Build\LinkField;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\ResourceConnection;
@@ -34,7 +34,7 @@ class CustomOptionFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function prepareBatch(array $products, BuildContext $context): void
+    public function prepareBatch(array $products, BuildContextInterface $context): void
     {
         $this->withOptions = [];
         $link = $this->linkField->product();
@@ -71,13 +71,13 @@ class CustomOptionFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function contribute(Product $product, DocumentDraft $draft, BuildContext $context): void
+    public function contribute(Product $product, DocumentDraftInterface $draft, BuildContextInterface $context): void
     {
         if ($draft->isExcluded()) {
             return;
         }
 
         $linkId = (int) $product->getData($this->linkField->product());
-        $draft->set('has_custom_options', isset($this->withOptions[$linkId]), DocumentDraft::GROUP_INTERNAL);
+        $draft->set('has_custom_options', isset($this->withOptions[$linkId]), DocumentDraftInterface::GROUP_INTERNAL);
     }
 }

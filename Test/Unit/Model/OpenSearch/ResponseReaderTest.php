@@ -25,9 +25,9 @@ class ResponseReaderTest extends TestCase
             ['index' => ['_id' => '3', 'status' => 400, 'error' => ['type' => 'mapper_parsing_exception']]],
         ]], 'index');
 
-        $this->assertSame(['1'], $result->written);
-        $this->assertSame(['2'], $result->stale);
-        $this->assertSame(['3' => 'mapper_parsing_exception'], $result->failed);
+        $this->assertSame(['1'], $result->getWritten());
+        $this->assertSame(['2'], $result->getStale());
+        $this->assertSame(['3' => 'mapper_parsing_exception'], $result->getFailed());
     }
 
     public function testDeletingADocumentThatIsAlreadyGoneIsFine(): void
@@ -37,7 +37,7 @@ class ResponseReaderTest extends TestCase
             'delete'
         );
 
-        $this->assertSame(['9'], $result->written);
+        $this->assertSame(['9'], $result->getWritten());
     }
 
     /**

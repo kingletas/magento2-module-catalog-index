@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Model\Stock;
 
 use Kingletas\CatalogIndex\Model\Config;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\StateStorage;
 use Kingletas\CatalogIndex\Model\Update\RefreshPublisher;
 use Kingletas\CatalogIndex\Model\Update\RefreshRequest;

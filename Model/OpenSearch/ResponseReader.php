@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Model\OpenSearch;
 
 use Kingletas\CatalogIndex\Api\Data\DocumentInterface;
+use Kingletas\CatalogIndex\Api\Data\WriteResultInterface;
 use Kingletas\CatalogIndex\Model\Store\Document;
 use Kingletas\CatalogIndex\Model\Store\WriteResult;
 
@@ -26,7 +27,7 @@ class ResponseReader
      *
      * @param array<mixed> $body
      */
-    public function writeResult(array $body, string $operation): WriteResult
+    public function writeResult(array $body, string $operation): WriteResultInterface
     {
         $written = [];
         $stale = [];

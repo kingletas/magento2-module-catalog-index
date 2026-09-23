@@ -17,11 +17,14 @@ Nothing a shopper sees changes on install. Every page type is off until you swit
 - [Update lanes and RabbitMQ](#update-lanes-and-rabbitmq)
 - [Content staging](#content-staging)
 - [Commands](#commands)
+- [Upgrading](#upgrading)
 - [What it guarantees](#what-it-guarantees)
+- [With the catalog batch module](#with-the-catalog-batch-module)
 - [What it costs and what it saves](#what-it-costs-and-what-it-saves)
 - [What the category and swatch switches add](#what-the-category-and-swatch-switches-add)
 - [Gotchas](#gotchas)
 - [What has been proved, and where](#what-has-been-proved-and-where)
+- [Public PHP API](#public-php-api)
 - [Tests](#tests)
 - [Rebranding](#rebranding)
 
@@ -61,7 +64,7 @@ Every page type has its own switch under **Stores > Configuration > Catalog > Ca
 | CMS product list widget | The widget's collection | |
 | GraphQL `products` | The query's product collection | Field resolvers that query on their own still do |
 
-It's built for Magento Open Source and Adobe Commerce 2.4.8 and 2.4.9, and for Mage-OS releases on the same framework. It needs PHP 8.4, which Magento supports from 2.4.8.
+It's built for Magento Open Source and Adobe Commerce 2.4.8 and 2.4.9, and for Mage-OS releases on the same framework. It needs PHP 8.4. Its sibling packages require 8.4 today, so 8.3 isn't supported yet.
 
 It has run on Open Source 2.4.8-p2 and Adobe Commerce 2.4.8-p2, and its hooks were checked in the source of Open Source 2.4.9. The other releases are expected to work but haven't been checked yet. Content staging and multi-source inventory are detected, not required.
 
@@ -107,13 +110,26 @@ The full design, with the reasoning for each decision, is in [docs/architecture.
 
 ## Installation
 
+Nothing here is on Packagist, and Magento itself needs your `repo.magento.com` keys. Composer only reads a `repositories` list from the package you're installing into, so these go in your store's own `composer.json` first:
+
+```json
+"repositories": [
+    { "type": "composer", "url": "https://repo.magento.com/" },
+    { "type": "composer", "url": "https://kingletas.github.io/packages" }
+]
+```
+
+The second line is the Kingletas package feed, which serves this module and `kingletas/module-foundation`, which it depends on.
+
+Then:
+
 ```bash
-composer require kingletas/module-catalog-index
+composer require kingletas/module-catalog-index -W
 bin/magento module:enable Kingletas_CatalogIndex
 bin/magento setup:upgrade
 ```
 
-It needs `Magento_OpenSearch` enabled, which every 2.4.8 and later install ships with, and `Kingletas_Foundation` 2.2 or later.
+`-W` lets Composer move `kingletas/module-foundation` forward if your store already has an older one: this module needs 2.2 or later. It also needs `Magento_OpenSearch` enabled, which every 2.4.8 and later install ships with.
 
 Then, in this order:
 
@@ -214,6 +230,21 @@ bin/magento kingletas:catalog-index:inspect SKU-123 --store-id=1
 
 ---
 
+## Upgrading
+
+**Every document records the schema it was written in**, as `_schema` in its source. A release that renames, removes or changes the meaning of a stored field raises that number and says so in the CHANGELOG. After upgrading to such a release:
+
+```bash
+bin/magento setup:upgrade
+bin/magento kingletas:catalog-index:rebuild
+```
+
+Until the rebuild finishes, pages don't read the older documents at all. They load from MySQL as they would without the module, and `status` counts them as `missing_document`. Nothing breaks and nothing shows stale data; the pages are just slower for a while. A release that doesn't change the schema needs no rebuild.
+
+**The read settings moved into three groups** before 1.0.0: `pages/` for the eight page switches, `features/` for the two configurable switches, and `breaker/failures` and `breaker/cooldown` for the circuit breaker. `setup:upgrade` moves any value saved in the database under the old `read/` paths. A value locked in `app/etc/config.php` or `env.php` isn't in the database, so rename those paths by hand.
+
+---
+
 ## What it guarantees
 
 ### A page never mixes sources
@@ -250,9 +281,23 @@ Purges go through `clean_cache_by_tags`, so Varnish and the built-in page cache 
 
 `missing_document`, `store_error`, `breaker_open` and `unsupported_product` are counted per page per hour in the application cache, never in the database. `status` marks a page over budget when its fallbacks pass **Fallback Budget**.
 
+Swatch attribute collections get a row of their own, `configurable_attributes`, because Magento asks for them on any page. It counts the collections built from documents, and `preempted` for a configurable that had a document but arrived with its attributes already filled in by another plugin. See [With the catalog batch module](#with-the-catalog-batch-module).
+
 ### Drift repairs itself and only speaks up when it matters
 
 Every hour, a sample of product documents is rebuilt in memory and compared with what's stored. Anything that differs is rebuilt. A warning is logged only when the share passes **Warn Above This Share Drifted**, and it repeats only when that share doubles or six hours have passed.
+
+---
+
+## With the catalog batch module
+
+`kingletas/module-catalog-batch` answers the same Magento call as this module's swatch attribute switch: `getConfigurableAttributes()`, the first time a page asks about a configurable product. Both can be on in one store, and which one answers is fixed rather than left to install order.
+
+**This module answers first.** Its plugin declares `sortOrder="10"` and the batch module's declares `20`. A configurable with a document gets its attributes from that document, with no per-product query when the option switch is on too. The batch module then answers every configurable that had no document, with one query for the whole page, and lets go of the ones this module already answered.
+
+**Some documents can still go unused, and `status` counts them.** The batch module answers a page's configurables together. So if a product with no document is asked about first, the batch query covers the rest of the page too, including products that had a document. Those reach this module already answered, and `status` counts them as `preempted` in the `configurable_attributes` row. The swatches still render; the document just wasn't used. The query was running anyway for the product that had no document.
+
+A few `preempted` on a store with missing documents is expected, and `missing_document` on the page rows says why. If most of the row is `preempted`, something is answering before this module: check that nothing has changed either plugin's `sortOrder`.
 
 ---
 
@@ -377,6 +422,21 @@ The suites prove the classes and their wiring. These stores prove the rest.
 | Adding, removing or relabelling a configurable's super attribute with no product save reaches the documents | Yes: the product's document was refreshed within the normal update window and its cache tags were purged |
 
 Still unproved: Mage-OS, Open Source 2.4.9, B2B shared catalogs, multi-source inventory with more than one source, Hyvä, and any store under real traffic.
+
+---
+
+## Public PHP API
+
+The interfaces under `Api/` are the public PHP surface, and each is marked `@api`. Everything else, including every class under `Model/`, is internal and can change in any release.
+
+| Kind | Types |
+| --- | --- |
+| Services | `DocumentReaderInterface`, `DocumentStoreInterface`, `IndexAdminInterface`, `CachePurgerInterface`, `RefresherInterface`, `StockReaderInterface` |
+| Extension point | `FieldProviderInterface`, registered in the `providers` argument of `ProductDocumentBuilder` |
+| Data | `DocumentInterface`, `DocumentDraftInterface`, `BuildContextInterface`, `ProductViewInterface`, `ConfigurableViewInterface`, `CategoryViewInterface`, `ReadContextInterface`, `WriteResultInterface`, `StockLevelInterface`, `ChangeSetInterface`, `ChangeInterface` |
+| Values | the `IndexFamily` and `PageType` enums in `Api/Data` |
+
+`AbstractFieldProvider` gives a provider with no batch state empty `prepareBatch()` and `resetBatch()` methods. Magento's coding standard doesn't allow `@api` on an abstract class, so the contract is `FieldProviderInterface`, not the base class.
 
 ---
 

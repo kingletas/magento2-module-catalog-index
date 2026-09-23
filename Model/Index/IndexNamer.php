@@ -11,6 +11,7 @@ namespace Kingletas\CatalogIndex\Model\Index;
 
 use DateTimeImmutable;
 use InvalidArgumentException;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Config;
 
 /**

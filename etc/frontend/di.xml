@@ -13,10 +13,11 @@
         </arguments>
     </type>
 
-    <!-- Only the storefront asks for these, and only when a page actually renders a configurable's swatches. -->
+    <!-- Only the storefront asks for these. Sorted before the catalog batch module's plugin, so a document answers first. -->
     <type name="Magento\ConfigurableProduct\Model\Product\Type\Configurable">
         <plugin name="kingletas_catalog_index_seed_configurable_attributes"
-                type="Kingletas\CatalogIndex\Plugin\Configurable\SeedConfigurableAttributes"/>
+                type="Kingletas\CatalogIndex\Plugin\Configurable\SeedConfigurableAttributes"
+                sortOrder="10"/>
     </type>
 
     <!-- Storefront collections read documents only once one of these marks them. -->

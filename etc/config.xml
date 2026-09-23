@@ -22,7 +22,7 @@
                 <replicas>0</replicas>
                 <keep_previous>1</keep_previous>
             </index>
-            <read>
+            <pages>
                 <category_listing>0</category_listing>
                 <search_listing>0</search_listing>
                 <product_view>0</product_view>
@@ -31,11 +31,15 @@
                 <linked_products>0</linked_products>
                 <widget>0</widget>
                 <graphql>0</graphql>
+            </pages>
+            <features>
                 <configurable_options>0</configurable_options>
                 <configurable_attributes>0</configurable_attributes>
-                <breaker_failures>5</breaker_failures>
-                <breaker_cooldown>30</breaker_cooldown>
-            </read>
+            </features>
+            <breaker>
+                <failures>5</failures>
+                <cooldown>30</cooldown>
+            </breaker>
             <updates>
                 <mode>queue</mode>
                 <inline_limit>50</inline_limit>

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\PageType;
 use Kingletas\CatalogIndex\Api\DocumentReaderInterface;
 use Kingletas\CatalogIndex\Exception\DocumentStoreException;
 use Magento\Catalog\Model\Product;
@@ -56,7 +57,7 @@ class CollectionHydrator
         }
 
         foreach ($items as $item) {
-            $this->hydrator->fillListingItem($item, $views[(int) $item->getId()], $context->storeId);
+            $this->hydrator->fillListingItem($item, $views[(int) $item->getId()], $context->getStoreId());
         }
 
         $collection->setFlag('media_gallery_added', true);

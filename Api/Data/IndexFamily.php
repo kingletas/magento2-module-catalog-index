@@ -7,10 +7,12 @@
 
 declare(strict_types=1);
 
-namespace Kingletas\CatalogIndex\Model\Index;
+namespace Kingletas\CatalogIndex\Api\Data;
 
 /**
  * The four kinds of document, each with its own index, change log and refresh lane.
+ *
+ * @api
  */
 enum IndexFamily: string
 {

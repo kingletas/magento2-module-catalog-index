@@ -9,14 +9,14 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Console\Command;
 
-use Kingletas\Foundation\Api\ClockInterface;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Api\DocumentStoreInterface;
 use Kingletas\CatalogIndex\Model\Build\BuildContext;
 use Kingletas\CatalogIndex\Model\Build\ProductDocumentBuilder;
 use Kingletas\CatalogIndex\Model\Build\VersionSource;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\IndexNamer;
 use Kingletas\CatalogIndex\Model\Index\ScopeResolver;
+use Kingletas\Foundation\Api\ClockInterface;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

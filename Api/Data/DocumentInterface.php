@@ -11,6 +11,8 @@ namespace Kingletas\CatalogIndex\Api\Data;
 
 /**
  * One stored document: an id, the version that wrote it, and its source fields.
+ *
+ * @api
  */
 interface DocumentInterface
 {

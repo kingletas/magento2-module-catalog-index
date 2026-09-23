@@ -25,12 +25,12 @@ What to set on a production store, and why. Every setting lives under **Stores >
 | `connection/index_prefix` | a name unique to the environment, such as `shop_prod` | Two environments on one cluster must never share aliases |
 | `index/replicas` | `1` on a cluster with more than one node | A lost node shouldn't send pages to the database |
 | `index/keep_previous` | `1` | One build to roll back to by hand |
-| `read/*` | on, one page type at a time | See below |
-| `read/category_tree` | `1` | Takes a count query per category off every page that shows a menu, a breadcrumb or a filter |
-| `read/configurable_options` | `1`, unless a website uses a stock other than the default one and the store hides out of stock products | Magento Inventory filters those option rows by salability on such a store, and a document can't |
-| `read/configurable_attributes` | `1` | Takes two queries per configurable off a listing, built only when Magento asks |
-| `read/breaker_failures` | `5` | |
-| `read/breaker_cooldown` | `30` | Long enough to stop a pile-up, short enough to recover quickly |
+| `pages/*` | on, one page type at a time | See below |
+| `pages/category_tree` | `1` | Takes a count query per category off every page that shows a menu, a breadcrumb or a filter |
+| `features/configurable_options` | `1`, unless a website uses a stock other than the default one and the store hides out of stock products | Magento Inventory filters those option rows by salability on such a store, and a document can't |
+| `features/configurable_attributes` | `1` | Takes two queries per configurable off a listing, built only when Magento asks |
+| `breaker/failures` | `5` | |
+| `breaker/cooldown` | `30` | Long enough to stop a pile-up, short enough to recover quickly |
 | `updates/mode` | `queue` | Consumers absorb bursts; inline mode adds work to admin requests |
 | `updates/batch_size` | `200` | Raise it only with a measurement |
 | `purge/enabled` | `1` | Without it, pages keep showing old documents until their cache expires |
@@ -46,7 +46,7 @@ What to set on a production store, and why. Every setting lives under **Stores >
 1. Put the four indexers on schedule, set `general/enabled` to `1`, and run `bin/magento kingletas:catalog-index:rebuild`.
 2. Check that the consumers are running and that `status` shows every index live.
 3. Run `verify --no-repair`. It should report nothing. If it reports drift straight after a rebuild, something is changing documents between builds, and it's worth understanding that before any page reads them.
-4. Switch on `read/category_listing` for one store view.
+4. Switch on `pages/category_listing` for one store view.
 5. Watch `status` for a day. The fallback ratio should settle near zero. A high `missing_document` count means products are reaching pages without documents, so check the change log backlog and the consumers. A high `store_error` or `breaker_open` count means OpenSearch is struggling at the read timeout.
 6. Repeat for search lists, linked products and widgets, then category pages, then product pages, then GraphQL.
 

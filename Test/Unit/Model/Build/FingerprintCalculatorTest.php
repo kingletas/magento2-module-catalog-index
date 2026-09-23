@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Build;
 
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
+use Kingletas\CatalogIndex\Model\Store\DocumentSchema;
 use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
 use Kingletas\CatalogIndex\Model\Build\FingerprintCalculator;
 use PHPUnit\Framework\TestCase;
@@ -35,8 +37,8 @@ class FingerprintCalculatorTest extends TestCase
     public function testADocumentCarriesAFingerprintPerGroup(): void
     {
         $draft = new DocumentDraft(7, 1);
-        $draft->set('name', 'Trail Jacket', DocumentDraft::GROUP_LISTING);
-        $draft->set('updated_at', 'now', DocumentDraft::GROUP_INTERNAL);
+        $draft->set('name', 'Trail Jacket', DocumentDraftInterface::GROUP_LISTING);
+        $draft->set('updated_at', 'now', DocumentDraftInterface::GROUP_INTERNAL);
 
         $document = (new FingerprintCalculator())->document($draft, 99);
 
@@ -46,5 +48,20 @@ class FingerprintCalculatorTest extends TestCase
         $this->assertNotNull($document->getFingerprint('listing'));
         $this->assertNotNull($document->getFingerprint('internal'));
         $this->assertNull($document->getFingerprint('detail'));
+    }
+
+    /**
+     * Every document is written in the current schema, and the schema field is not part of any fingerprint.
+     */
+    public function testADocumentIsStampedWithTheSchemaItWasWrittenIn(): void
+    {
+        $draft = new DocumentDraft(7, 1);
+        $draft->set('name', 'Trail Jacket', DocumentDraft::GROUP_LISTING);
+        $before = (new FingerprintCalculator())->fingerprint(['name' => 'Trail Jacket']);
+
+        $document = (new FingerprintCalculator())->document($draft, 99);
+
+        $this->assertSame(DocumentSchema::VERSION, $document->get(DocumentSchema::FIELD));
+        $this->assertSame($before, $document->getFingerprint('listing'));
     }
 }

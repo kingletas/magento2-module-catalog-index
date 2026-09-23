@@ -31,12 +31,12 @@ class DocumentWriterTest extends TestCase
         $byId = [];
 
         foreach ($changes->changes() as $change) {
-            $byId[$change->id] = $change;
+            $byId[$change->getId()] = $change;
         }
 
-        $this->assertSame(['internal'], $byId[5]->changedGroups);
+        $this->assertSame(['internal'], $byId[5]->getChangedGroups());
         $this->assertSame([30], $byId[5]->movedCategories());
-        $this->assertTrue($byId[6]->created);
+        $this->assertTrue($byId[6]->isCreated());
         $this->assertSame(2, $changes->written());
     }
 
@@ -65,8 +65,8 @@ class DocumentWriterTest extends TestCase
         $changes = (new DocumentWriter($store, new NullLogger()))->replace('p_1', 'p_1', new BuildBatch(2, [], [7, 8]));
 
         $this->assertArrayNotHasKey('7', $store->indexes['p_1']);
-        $this->assertTrue($changes->changes()[0]->deleted);
-        $this->assertSame([3], $changes->changes()[0]->categoriesBefore);
+        $this->assertTrue($changes->changes()[0]->isDeleted());
+        $this->assertSame([3], $changes->changes()[0]->getCategoriesBefore());
     }
 
     /**

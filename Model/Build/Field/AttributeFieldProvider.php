@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Build\Field;
 
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Kingletas\CatalogIndex\Model\Build\StoredAttributes;
-use Kingletas\CatalogIndex\Model\Build\BuildContext;
-use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
 use Magento\Catalog\Model\Config as CatalogConfig;
 use Magento\Catalog\Model\Product;
 
@@ -38,28 +38,32 @@ class AttributeFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function contribute(Product $product, DocumentDraft $draft, BuildContext $context): void
+    public function contribute(Product $product, DocumentDraftInterface $draft, BuildContextInterface $context): void
     {
         if ($draft->isExcluded()) {
             return;
         }
 
-        $split = [DocumentDraft::GROUP_LISTING => [], DocumentDraft::GROUP_DETAIL => []];
+        $split = [DocumentDraftInterface::GROUP_LISTING => [], DocumentDraftInterface::GROUP_DETAIL => []];
         $listingCodes = $this->listingCodes();
 
         foreach ($product->getData() as $code => $value) {
             $code = (string) $code;
 
             if ($this->isStorable($code, $value)) {
-                $group = isset($listingCodes[$code]) ? DocumentDraft::GROUP_LISTING : DocumentDraft::GROUP_DETAIL;
+                $group = isset($listingCodes[$code])
+                    ? DocumentDraftInterface::GROUP_LISTING
+                    : DocumentDraftInterface::GROUP_DETAIL;
                 $split[$group][$code] = $value;
             }
         }
 
-        ksort($split[DocumentDraft::GROUP_LISTING]);
-        ksort($split[DocumentDraft::GROUP_DETAIL]);
-        $draft->set('listing_attributes', $split[DocumentDraft::GROUP_LISTING], DocumentDraft::GROUP_LISTING);
-        $draft->set('detail_attributes', $split[DocumentDraft::GROUP_DETAIL], DocumentDraft::GROUP_DETAIL);
+        ksort($split[DocumentDraftInterface::GROUP_LISTING]);
+        ksort($split[DocumentDraftInterface::GROUP_DETAIL]);
+        $listing = DocumentDraftInterface::GROUP_LISTING;
+        $detail = DocumentDraftInterface::GROUP_DETAIL;
+        $draft->set('listing_attributes', $split[$listing], $listing);
+        $draft->set('detail_attributes', $split[$detail], $detail);
     }
 
     private function isStorable(string $code, mixed $value): bool

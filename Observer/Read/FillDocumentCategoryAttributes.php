@@ -12,7 +12,7 @@ namespace Kingletas\CatalogIndex\Observer\Read;
 use Kingletas\CatalogIndex\Model\Read\CategoryCollectionHydrator;
 use Kingletas\CatalogIndex\Model\Read\FallbackRecorder;
 use Kingletas\CatalogIndex\Model\Read\PageScope;
-use Kingletas\CatalogIndex\Model\Read\PageType;
+use Kingletas\CatalogIndex\Api\Data\PageType;
 use Kingletas\CatalogIndex\Model\Read\ReadDecision;
 use Kingletas\CatalogIndex\Model\Read\ReadGate;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as EavCollection;

@@ -9,13 +9,16 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\CategoryViewInterface;
+use Kingletas\CatalogIndex\Api\Data\PageType;
+use Kingletas\CatalogIndex\Api\Data\ProductViewInterface;
+use Kingletas\CatalogIndex\Api\Data\ReadContextInterface;
 use Kingletas\CatalogIndex\Api\DocumentReaderInterface;
 use Kingletas\CatalogIndex\Exception\DocumentStoreException;
 use Kingletas\CatalogIndex\Model\Read\CategoryView;
 use Kingletas\CatalogIndex\Model\Read\DetailDocuments;
 use Kingletas\CatalogIndex\Model\Read\FallbackRecorder;
 use Kingletas\CatalogIndex\Model\Read\PageScope;
-use Kingletas\CatalogIndex\Model\Read\PageType;
 use Kingletas\CatalogIndex\Model\Read\ProductView;
 use Kingletas\CatalogIndex\Model\Read\ReadContext;
 use Kingletas\CatalogIndex\Model\Read\ReadContextResolver;
@@ -48,7 +51,7 @@ class DetailDocumentsTest extends TestCase
 
         $this->scope->enter(PageType::ProductView, 5);
 
-        $this->assertInstanceOf(ProductView::class, $documents->product(5, 1));
+        $this->assertInstanceOf(ProductViewInterface::class, $documents->product(5, 1));
         $this->assertNull($documents->product(6, 1));
 
         $this->scope->leave(PageType::ProductView);
@@ -93,7 +96,7 @@ class DetailDocumentsTest extends TestCase
 
         $this->scope->enter(PageType::CategoryView, 12);
 
-        $this->assertInstanceOf(CategoryView::class, $documents->category(12, 1));
+        $this->assertInstanceOf(CategoryViewInterface::class, $documents->category(12, 1));
         $this->assertNull($documents->category(13, 1));
         $this->assertSame(['served'], $this->outcomes);
     }
@@ -118,7 +121,7 @@ class DetailDocumentsTest extends TestCase
         $reader->method('products')->willReturnCallback(function () use ($source): array {
             $this->reads++;
 
-            return $this->answer($source, static fn (): ProductView => new ProductView(
+            return $this->answer($source, static fn (): ProductViewInterface => new ProductView(
                 5,
                 (array) $source,
                 null,
@@ -126,11 +129,11 @@ class DetailDocumentsTest extends TestCase
             ), 5);
         });
         $reader->method('categories')->willReturnCallback(
-            fn (): array => $this->answer($source, static fn (): CategoryView => new CategoryView(12, []), 12)
+            fn (): array => $this->answer($source, static fn (): CategoryViewInterface => new CategoryView(12, []), 12)
         );
         $contexts = $this->createMock(ReadContextResolver::class);
         $contexts->method('resolve')->willReturnCallback(
-            static fn (PageType $page): ReadContext => new ReadContext($page, 1, 1, 0)
+            static fn (PageType $page): ReadContextInterface => new ReadContext($page, 1, 1, 0)
         );
         $recorder = $this->createMock(FallbackRecorder::class);
         $recorder->method('fellBack')->willReturnCallback(function (PageType $page, string $reason): void {

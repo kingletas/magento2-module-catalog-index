@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Index;
 
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\ScopeResolver;
 use Magento\Store\Api\Data\GroupInterface;
 use Magento\Store\Model\Store;

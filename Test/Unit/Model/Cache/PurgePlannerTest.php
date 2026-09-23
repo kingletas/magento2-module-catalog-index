@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Cache;
 
+use Kingletas\CatalogIndex\Api\Data\ChangeInterface;
+use Kingletas\CatalogIndex\Api\Data\ChangeSetInterface;
 use Kingletas\CatalogIndex\Model\Cache\PurgePlanner;
 use Kingletas\CatalogIndex\Model\Update\Change;
 use Kingletas\CatalogIndex\Model\Update\ChangeSet;
@@ -54,7 +56,7 @@ class PurgePlannerTest extends TestCase
         )));
     }
 
-    private function set(Change ...$changes): ChangeSet
+    private function set(ChangeInterface ...$changes): ChangeSetInterface
     {
         $set = new ChangeSet();
 

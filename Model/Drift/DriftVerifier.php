@@ -9,17 +9,17 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Drift;
 
-use Kingletas\Foundation\Api\ClockInterface;
 use Kingletas\CatalogIndex\Api\Data\DocumentInterface;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Api\DocumentStoreInterface;
 use Kingletas\CatalogIndex\Model\Build\BuildContext;
 use Kingletas\CatalogIndex\Model\Build\ProductDocumentBuilder;
 use Kingletas\CatalogIndex\Model\Build\VersionSource;
 use Kingletas\CatalogIndex\Model\Config;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\IndexNamer;
 use Kingletas\CatalogIndex\Model\Index\ScopeResolver;
 use Kingletas\CatalogIndex\Model\Update\ProductRefresher;
+use Kingletas\Foundation\Api\ClockInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\ScopeInterface;

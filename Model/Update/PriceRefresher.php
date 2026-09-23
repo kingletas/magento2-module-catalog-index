@@ -10,12 +10,13 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Model\Update;
 
 use Kingletas\CatalogIndex\Api\CachePurgerInterface;
+use Kingletas\CatalogIndex\Api\Data\ChangeSetInterface;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Api\RefresherInterface;
 use Kingletas\CatalogIndex\Model\Build\PriceDocumentBuilder;
 use Kingletas\CatalogIndex\Model\Build\VersionSource;
 use Kingletas\CatalogIndex\Model\Cache\PurgePlanner;
 use Kingletas\CatalogIndex\Model\Config;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\IndexNamer;
 use Kingletas\CatalogIndex\Model\Index\ScopeResolver;
 
@@ -69,7 +70,7 @@ class PriceRefresher implements RefresherInterface
     /**
      * @inheritDoc
      */
-    public function refreshInto(array $ids, int $scopeId, string $writeIndex, string $compareIndex): ChangeSet
+    public function refreshInto(array $ids, int $scopeId, string $writeIndex, string $compareIndex): ChangeSetInterface
     {
         $batch = $this->builder->build(array_map('intval', $ids), $scopeId, $this->versions->next());
 

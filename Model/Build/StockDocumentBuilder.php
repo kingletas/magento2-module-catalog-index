@@ -9,8 +9,9 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Build;
 
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
+use Kingletas\CatalogIndex\Api\Data\StockLevelInterface;
 use Kingletas\CatalogIndex\Model\Config;
-use Kingletas\CatalogIndex\Model\Stock\StockLevel;
 use Kingletas\CatalogIndex\Model\Stock\StockReaderPool;
 use Kingletas\CatalogIndex\Model\Update\AffectedProductResolver;
 
@@ -57,11 +58,11 @@ class StockDocumentBuilder
             }
 
             $draft = new DocumentDraft($productId, $websiteId);
-            $draft->set('is_salable', $level->isSalable, self::GROUP_SALABLE);
-            $draft->set('qty', $level->quantity, DocumentDraft::GROUP_INTERNAL);
-            $draft->set('salable_qty', $level->salableQuantity, DocumentDraft::GROUP_INTERNAL);
-            $draft->set('stock_id', $level->stockId, DocumentDraft::GROUP_INTERNAL);
-            $draft->set('low_stock', $threshold > 0 && $level->salableQuantity <= $threshold, self::GROUP_LEVEL);
+            $draft->set('is_salable', $level->isSalable(), self::GROUP_SALABLE);
+            $draft->set('qty', $level->getQuantity(), DocumentDraftInterface::GROUP_INTERNAL);
+            $draft->set('salable_qty', $level->getSalableQuantity(), DocumentDraftInterface::GROUP_INTERNAL);
+            $draft->set('stock_id', $level->getStockId(), DocumentDraftInterface::GROUP_INTERNAL);
+            $draft->set('low_stock', $threshold > 0 && $level->getSalableQuantity() <= $threshold, self::GROUP_LEVEL);
             $draft->set('children', $this->childSalability($children[$productId] ?? [], $levels), self::GROUP_VARIANTS);
             $documents[] = $this->fingerprints->document($draft, $version);
         }
@@ -71,7 +72,7 @@ class StockDocumentBuilder
 
     /**
      * @param int[] $childIds
-     * @param array<int, StockLevel> $levels
+     * @param array<int, StockLevelInterface> $levels
      * @return array<int, bool>
      */
     private function childSalability(array $childIds, array $levels): array
@@ -80,7 +81,7 @@ class StockDocumentBuilder
         sort($childIds);
 
         foreach ($childIds as $childId) {
-            $salability[$childId] = isset($levels[$childId]) && $levels[$childId]->isSalable;
+            $salability[$childId] = isset($levels[$childId]) && $levels[$childId]->isSalable();
         }
 
         return $salability;

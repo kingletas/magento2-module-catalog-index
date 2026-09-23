@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Plugin\Indexer;
 
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Update\RefreshPublisher;
 
 /**

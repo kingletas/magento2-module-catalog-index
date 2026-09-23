@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Read;
 
 use Kingletas\CatalogIndex\Model\Read\CircuitBreaker;
-use Kingletas\CatalogIndex\Model\Read\PageType;
+use Kingletas\CatalogIndex\Api\Data\PageType;
 use Kingletas\CatalogIndex\Model\Read\ReadDecision;
 use Kingletas\CatalogIndex\Model\Read\ReadGate;
 use Kingletas\CatalogIndex\Test\Support\ShippedConfig;
@@ -33,7 +33,7 @@ class ReadGateTest extends TestCase
         ];
 
         foreach ($pages as $field => $page) {
-            $gate = new ReadGate($this->config(['read/' . $field => '1']), $this->breaker(false));
+            $gate = new ReadGate($this->config(['pages/' . $field => '1']), $this->breaker(false));
 
             foreach ($pages as $other) {
                 $this->assertSame(
@@ -49,12 +49,12 @@ class ReadGateTest extends TestCase
     {
         $this->assertSame(
             ReadDecision::BreakerOpen,
-            (new ReadGate($this->config(['read/widget' => '1']), $this->breaker(true)))->decide(PageType::Widget, 1)
+            (new ReadGate($this->config(['pages/widget' => '1']), $this->breaker(true)))->decide(PageType::Widget, 1)
         );
         $this->assertSame(
             ReadDecision::Disabled,
             (
-                new ReadGate($this->config(['read/widget' => '1', 'general/enabled' => '0']), $this->breaker(false))
+                new ReadGate($this->config(['pages/widget' => '1', 'general/enabled' => '0']), $this->breaker(false))
             )->decide(PageType::Widget, 1)
         );
     }

@@ -11,7 +11,7 @@ namespace Kingletas\CatalogIndex\Model\Schedule;
 
 use Kingletas\Foundation\Api\ClockInterface;
 use Kingletas\CatalogIndex\Model\Config;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\StateStorage;
 use Kingletas\CatalogIndex\Model\Staging\ScheduledVersionScanner;
 use Kingletas\CatalogIndex\Model\Staging\StagingMode;

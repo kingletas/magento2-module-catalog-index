@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Rebuild;
 
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 
 /**
  * What a full rebuild did in one scope.

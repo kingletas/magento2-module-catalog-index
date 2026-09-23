@@ -56,11 +56,11 @@ class MsiStockReaderTest extends TestCase
 
         $levels = $this->reader(true)->read([5, 6], 1);
 
-        $this->assertFalse($levels[5]->isSalable);
-        $this->assertSame(0.0, $levels[5]->salableQuantity);
-        $this->assertTrue($levels[6]->isSalable);
-        $this->assertSame(8.0, $levels[6]->salableQuantity);
-        $this->assertSame(2, $levels[6]->stockId);
+        $this->assertFalse($levels[5]->isSalable());
+        $this->assertSame(0.0, $levels[5]->getSalableQuantity());
+        $this->assertTrue($levels[6]->isSalable());
+        $this->assertSame(8.0, $levels[6]->getSalableQuantity());
+        $this->assertSame(2, $levels[6]->getStockId());
     }
 
     public function testBackordersKeepAProductBuyableAtZero(): void
@@ -81,7 +81,7 @@ class MsiStockReaderTest extends TestCase
             ],
         ];
 
-        $this->assertTrue($this->reader(true)->read([5], 1)[5]->isSalable);
+        $this->assertTrue($this->reader(true)->read([5], 1)[5]->isSalable());
     }
 
     public function testItAppliesOnlyWhereInventoryIsEnabledAndItsTablesExist(): void

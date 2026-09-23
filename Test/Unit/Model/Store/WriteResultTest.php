@@ -20,8 +20,9 @@ class WriteResultTest extends TestCase
             new WriteResult(['3'], [], ['4' => 'mapper_parsing_exception'])
         );
 
-        $this->assertSame(['1', '3'], $merged->written);
-        $this->assertSame(['2'], $merged->stale);
+        $this->assertSame(['1', '3'], $merged->getWritten());
+        $this->assertSame(['2'], $merged->getStale());
+        $this->assertSame(['4' => 'mapper_parsing_exception'], $merged->getFailed());
         $this->assertFalse($merged->isClean());
     }
 }

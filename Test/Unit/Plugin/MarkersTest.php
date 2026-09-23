@@ -11,7 +11,7 @@ namespace Kingletas\CatalogIndex\Test\Unit\Plugin;
 
 use Kingletas\CatalogIndex\Model\GraphQl\MarkDocumentCollection;
 use Kingletas\CatalogIndex\Model\Read\PageScope;
-use Kingletas\CatalogIndex\Model\Read\PageType;
+use Kingletas\CatalogIndex\Api\Data\PageType;
 use Kingletas\CatalogIndex\Plugin\Layer\MarkSearchListing;
 use Kingletas\CatalogIndex\Plugin\Link\MarkLinkedCollection;
 use Kingletas\CatalogIndex\Plugin\Widget\MarkWidgetCollection;

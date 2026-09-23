@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Read\Configurable;
 
+use Kingletas\CatalogIndex\Api\Data\ConfigurableViewInterface;
 use Kingletas\CatalogIndex\Model\Read\Configurable\AttributeCollectionBuilder;
 use Kingletas\CatalogIndex\Model\Read\Configurable\SeededAttributeCollection;
 use Kingletas\CatalogIndex\Model\Read\Configurable\SeededAttributeCollectionFactory;
@@ -91,7 +92,7 @@ class AttributeCollectionBuilderTest extends TestCase
         $this->assertNull($this->builder(false)->build($this->view(), 7, 1));
     }
 
-    private function view(): ConfigurableView
+    private function view(): ConfigurableViewInterface
     {
         return new ConfigurableView([
             'super_attributes' => [

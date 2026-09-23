@@ -10,10 +10,10 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Model\Rebuild;
 
 use Kingletas\CatalogIndex\Api\CachePurgerInterface;
+use Kingletas\CatalogIndex\Api\Data\ChangeSetInterface;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Cache\PurgePlanner;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
 use Kingletas\CatalogIndex\Model\Update\AffectedProductResolver;
-use Kingletas\CatalogIndex\Model\Update\ChangeSet;
 
 /**
  * Purges only what a rebuild found different from the index it replaced.
@@ -27,7 +27,7 @@ class RebuildPurger
     ) {
     }
 
-    public function purge(IndexFamily $family, ChangeSet $changes): void
+    public function purge(IndexFamily $family, ChangeSetInterface $changes): void
     {
         $tags = match ($family) {
             IndexFamily::Product => $this->planner->forProducts($changes),

@@ -7,9 +7,9 @@
 
 declare(strict_types=1);
 
-namespace Kingletas\CatalogIndex\Test\Unit\Model\Index;
+namespace Kingletas\CatalogIndex\Test\Unit\Api\Data;
 
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use PHPUnit\Framework\TestCase;
 
 class IndexFamilyTest extends TestCase

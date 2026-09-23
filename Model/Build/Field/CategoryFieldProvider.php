@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Build\Field;
 
-use Kingletas\CatalogIndex\Model\Build\BuildContext;
-use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\ResourceConnection;
 
@@ -32,7 +32,7 @@ class CategoryFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function prepareBatch(array $products, BuildContext $context): void
+    public function prepareBatch(array $products, BuildContextInterface $context): void
     {
         $this->positions = [];
 
@@ -66,7 +66,7 @@ class CategoryFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function contribute(Product $product, DocumentDraft $draft, BuildContext $context): void
+    public function contribute(Product $product, DocumentDraftInterface $draft, BuildContextInterface $context): void
     {
         if ($draft->isExcluded()) {
             return;
@@ -75,7 +75,7 @@ class CategoryFieldProvider extends AbstractFieldProvider
         $positions = $this->positions[(int) $product->getId()] ?? [];
         ksort($positions);
 
-        $draft->set('category_ids', array_keys($positions), DocumentDraft::GROUP_INTERNAL);
-        $draft->set('category_positions', $positions, DocumentDraft::GROUP_INTERNAL);
+        $draft->set('category_ids', array_keys($positions), DocumentDraftInterface::GROUP_INTERNAL);
+        $draft->set('category_positions', $positions, DocumentDraftInterface::GROUP_INTERNAL);
     }
 }

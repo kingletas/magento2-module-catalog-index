@@ -11,7 +11,7 @@ namespace Kingletas\CatalogIndex\Test\Unit\Model\Metric;
 
 use Kingletas\CatalogIndex\Model\Metric\MetricStorage;
 use Kingletas\CatalogIndex\Model\Read\FallbackRecorder;
-use Kingletas\CatalogIndex\Model\Read\PageType;
+use Kingletas\CatalogIndex\Api\Data\PageType;
 use Kingletas\Foundation\Test\Support\ArrayCache;
 use Kingletas\Foundation\Test\Support\FakeClock;
 use Magento\Framework\Serialize\Serializer\Json;

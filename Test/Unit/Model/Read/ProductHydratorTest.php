@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\ProductViewInterface;
 use Kingletas\CatalogIndex\Model\Read\CategoryHydrator;
 use Kingletas\CatalogIndex\Model\Read\CategoryView;
 use Kingletas\CatalogIndex\Model\Read\Configurable\ServedAttributes;
@@ -87,7 +88,7 @@ class ProductHydratorTest extends TestCase
     {
         $item = $this->product(['entity_id' => 5]);
 
-        $this->hydrator(['read/configurable_attributes' => '1'])
+        $this->hydrator(['features/configurable_attributes' => '1'])
             ->fillListingItem($item, $this->view(), 1);
 
         $this->assertNull($item->getData('_cache_instance_configurable_attributes'));
@@ -100,7 +101,7 @@ class ProductHydratorTest extends TestCase
     public function testProductsWhoseIdsCollideKeepTheirOwnAnswers(): void
     {
         $hydrator = new ProductHydrator(
-            $this->config(['read/configurable_attributes' => '1', 'read/configurable_options' => '1']),
+            $this->config(['features/configurable_attributes' => '1', 'features/configurable_options' => '1']),
             $this->served,
             $this->linkField('row_id'),
             $this->attributes
@@ -112,8 +113,8 @@ class ProductHydratorTest extends TestCase
         $hydrator->fillListingItem($this->product(['entity_id' => 107, 'row_id' => 114]), $newer, 1);
         $hydrator->fillListingItem($this->product(['entity_id' => 100, 'row_id' => 107]), $older, 1);
 
-        $this->assertSame($newer->configurable, $this->attributes->forProduct(107));
-        $this->assertSame($older->configurable, $this->attributes->forProduct(100));
+        $this->assertSame($newer->getConfigurable(), $this->attributes->forProduct(107));
+        $this->assertSame($older->getConfigurable(), $this->attributes->forProduct(100));
         $this->assertSame([['value_index' => '49']], $this->served->rows(107, 93));
         $this->assertSame([['value_index' => '170']], $this->served->rows(114, 144));
         $this->assertNull($this->served->rows(107, 144));
@@ -168,7 +169,7 @@ class ProductHydratorTest extends TestCase
         );
     }
 
-    private function configurable(int $id, int $attributeId, string $valueIndex): ProductView
+    private function configurable(int $id, int $attributeId, string $valueIndex): ProductViewInterface
     {
         return new ProductView($id, [
             'type_id' => 'configurable',
@@ -177,7 +178,7 @@ class ProductHydratorTest extends TestCase
         ]);
     }
 
-    private function view(): ProductView
+    private function view(): ProductViewInterface
     {
         return new ProductView(5, [
             'type_id' => 'configurable',

@@ -9,12 +9,14 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Api;
 
-use Kingletas\CatalogIndex\Model\Build\BuildContext;
-use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Magento\Catalog\Model\Product;
 
 /**
  * Contributes one concern's fields to a product document.
+ *
+ * @api
  */
 interface FieldProviderInterface
 {
@@ -23,9 +25,9 @@ interface FieldProviderInterface
      *
      * @param array<int, Product> $products Keyed by entity id.
      */
-    public function prepareBatch(array $products, BuildContext $context): void;
+    public function prepareBatch(array $products, BuildContextInterface $context): void;
 
-    public function contribute(Product $product, DocumentDraft $draft, BuildContext $context): void;
+    public function contribute(Product $product, DocumentDraftInterface $draft, BuildContextInterface $context): void;
 
     public function resetBatch(): void;
 

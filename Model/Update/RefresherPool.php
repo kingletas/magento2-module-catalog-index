@@ -11,7 +11,7 @@ namespace Kingletas\CatalogIndex\Model\Update;
 
 use InvalidArgumentException;
 use Kingletas\CatalogIndex\Api\RefresherInterface;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 
 /**
  * Finds the refresher registered under a family's name.

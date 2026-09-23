@@ -28,7 +28,7 @@ class BuildBatchTest extends TestCase
     {
         $context = new BuildContext(2, 1, 77, new \DateTimeImmutable('2026-09-15'), 'Europe/Madrid');
 
-        $this->assertSame(2, $context->storeId);
-        $this->assertSame('Europe/Madrid', $context->timezone);
+        $this->assertSame(2, $context->getStoreId());
+        $this->assertSame('Europe/Madrid', $context->getTimezone());
     }
 }

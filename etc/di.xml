@@ -11,6 +11,30 @@
     <preference for="Kingletas\CatalogIndex\Api\CachePurgerInterface"
                 type="Kingletas\CatalogIndex\Model\Cache\TagPurger"/>
 
+    <!-- The public data types; everything under Model is internal. -->
+    <preference for="Kingletas\CatalogIndex\Api\Data\DocumentInterface"
+                type="Kingletas\CatalogIndex\Model\Store\Document"/>
+    <preference for="Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface"
+                type="Kingletas\CatalogIndex\Model\Build\DocumentDraft"/>
+    <preference for="Kingletas\CatalogIndex\Api\Data\BuildContextInterface"
+                type="Kingletas\CatalogIndex\Model\Build\BuildContext"/>
+    <preference for="Kingletas\CatalogIndex\Api\Data\ProductViewInterface"
+                type="Kingletas\CatalogIndex\Model\Read\ProductView"/>
+    <preference for="Kingletas\CatalogIndex\Api\Data\ConfigurableViewInterface"
+                type="Kingletas\CatalogIndex\Model\Read\ConfigurableView"/>
+    <preference for="Kingletas\CatalogIndex\Api\Data\CategoryViewInterface"
+                type="Kingletas\CatalogIndex\Model\Read\CategoryView"/>
+    <preference for="Kingletas\CatalogIndex\Api\Data\ReadContextInterface"
+                type="Kingletas\CatalogIndex\Model\Read\ReadContext"/>
+    <preference for="Kingletas\CatalogIndex\Api\Data\WriteResultInterface"
+                type="Kingletas\CatalogIndex\Model\Store\WriteResult"/>
+    <preference for="Kingletas\CatalogIndex\Api\Data\StockLevelInterface"
+                type="Kingletas\CatalogIndex\Model\Stock\StockLevel"/>
+    <preference for="Kingletas\CatalogIndex\Api\Data\ChangeInterface"
+                type="Kingletas\CatalogIndex\Model\Update\Change"/>
+    <preference for="Kingletas\CatalogIndex\Api\Data\ChangeSetInterface"
+                type="Kingletas\CatalogIndex\Model\Update\ChangeSet"/>
+
     <type name="Kingletas\CatalogIndex\Model\Config">
         <arguments>
             <argument name="section" xsi:type="string">kingletas_catalog_index</argument>

@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Observer;
 
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Update\RefreshPublisher;
 use Kingletas\CatalogIndex\Model\Update\RefreshRequest;
 use Kingletas\CatalogIndex\Observer\RefreshSuperAttributeProducts;

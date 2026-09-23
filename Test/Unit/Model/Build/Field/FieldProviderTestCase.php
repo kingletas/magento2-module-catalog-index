@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Build\Field;
 
 use DateTimeImmutable;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Kingletas\CatalogIndex\Api\FieldProviderInterface;
 use Kingletas\CatalogIndex\Model\Build\BuildContext;
 use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
@@ -30,12 +32,12 @@ abstract class FieldProviderTestCase extends TestCase
 
     /**
      * @param Product[] $products
-     * @return array<int, DocumentDraft>
+     * @return array<int, DocumentDraftInterface>
      */
     protected function runProvider(
         FieldProviderInterface $provider,
         array $products,
-        ?BuildContext $context = null
+        ?BuildContextInterface $context = null
     ): array {
         $context ??= $this->context();
         $keyed = [];
@@ -48,7 +50,7 @@ abstract class FieldProviderTestCase extends TestCase
         $drafts = [];
 
         foreach ($keyed as $id => $product) {
-            $drafts[$id] = new DocumentDraft($id, $context->storeId);
+            $drafts[$id] = new DocumentDraft($id, $context->getStoreId());
             $provider->contribute($product, $drafts[$id], $context);
         }
 
@@ -57,7 +59,7 @@ abstract class FieldProviderTestCase extends TestCase
         return $drafts;
     }
 
-    protected function context(string $timezone = 'UTC'): BuildContext
+    protected function context(string $timezone = 'UTC'): BuildContextInterface
     {
         return new BuildContext(1, 1, 10, new DateTimeImmutable('2026-09-15 12:00:00'), $timezone);
     }

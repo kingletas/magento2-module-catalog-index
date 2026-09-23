@@ -28,8 +28,8 @@ class LegacyStockReaderTest extends TestCase
 
         $this->assertTrue($reader->isApplicable());
         $this->assertSame([5], array_keys($levels));
-        $this->assertTrue($levels[5]->isSalable);
-        $this->assertSame(4.0, $levels[5]->quantity);
+        $this->assertTrue($levels[5]->isSalable());
+        $this->assertSame(4.0, $levels[5]->getQuantity());
         $this->assertSame([], $reader->read([], 3));
     }
 }

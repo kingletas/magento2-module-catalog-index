@@ -44,11 +44,12 @@ class ProductViewTest extends TestCase
             ],
             $view->attributes()
         );
+        $this->assertSame(5, $view->getId());
         $this->assertSame('trail-jacket.html', $view->requestPath());
         $this->assertSame([['price' => 8.0]], $view->tierPrice());
         $this->assertSame(['rating_summary' => 80, 'reviews_count' => 2], $view->reviewSummary());
-        $this->assertSame(['93' => [['value_index' => '49']]], $view->configurable->options());
-        $this->assertSame([], (new ProductView(5, []))->configurable->options());
+        $this->assertSame(['93' => [['value_index' => '49']]], $view->getConfigurable()->options());
+        $this->assertSame([], (new ProductView(5, []))->getConfigurable()->options());
         $this->assertSame([12], $view->categoryIds());
         $this->assertNull((new ProductView(5, []))->categoryIds());
         $this->assertSame(['final_price' => 18.0], $view->price());

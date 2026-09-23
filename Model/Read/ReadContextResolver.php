@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\PageType;
+use Kingletas\CatalogIndex\Api\Data\ReadContextInterface;
 use Magento\Customer\Model\Context as CustomerContext;
 use Magento\Framework\App\Http\Context as HttpContext;
 use Magento\Store\Model\StoreManagerInterface;
@@ -24,7 +26,7 @@ class ReadContextResolver
     ) {
     }
 
-    public function resolve(PageType $page, ?int $storeId = null): ReadContext
+    public function resolve(PageType $page, ?int $storeId = null): ReadContextInterface
     {
         $store = $storeId === null || $storeId === 0
             ? $this->storeManager->getStore()

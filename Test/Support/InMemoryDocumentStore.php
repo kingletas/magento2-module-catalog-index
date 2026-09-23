@@ -10,10 +10,12 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Test\Support;
 
 use Kingletas\CatalogIndex\Api\Data\DocumentInterface;
+use Kingletas\CatalogIndex\Api\Data\WriteResultInterface;
 use Kingletas\CatalogIndex\Api\DocumentStoreInterface;
 use Kingletas\CatalogIndex\Api\IndexAdminInterface;
 use Kingletas\CatalogIndex\Exception\DocumentStoreException;
 use Kingletas\CatalogIndex\Model\Store\Document;
+use Kingletas\CatalogIndex\Model\Store\DocumentSchema;
 use Kingletas\CatalogIndex\Model\Store\WriteResult;
 
 /**
@@ -32,7 +34,7 @@ class InMemoryDocumentStore implements DocumentStoreInterface, IndexAdminInterfa
 
     public bool $unreachable = false;
 
-    public function write(string $index, array $documents): WriteResult
+    public function write(string $index, array $documents): WriteResultInterface
     {
         $this->tally('write');
         $target = $this->resolve($index, true);
@@ -55,7 +57,7 @@ class InMemoryDocumentStore implements DocumentStoreInterface, IndexAdminInterfa
         return new WriteResult($written, $stale);
     }
 
-    public function delete(string $index, array $ids, int $version): WriteResult
+    public function delete(string $index, array $ids, int $version): WriteResultInterface
     {
         $this->tally('delete');
         $target = $this->resolve($index, true);
@@ -157,10 +159,13 @@ class InMemoryDocumentStore implements DocumentStoreInterface, IndexAdminInterfa
     }
 
     /**
+     * Seeds a document as the module writes it, in the current schema unless the source names another.
+     *
      * @param array<string, mixed> $source
      */
     public function seed(string $index, string $id, array $source, int $version = 1): void
     {
+        $source += [DocumentSchema::FIELD => DocumentSchema::VERSION];
         $this->indexes[$index][$id] = new Document($id, $version, $source);
     }
 

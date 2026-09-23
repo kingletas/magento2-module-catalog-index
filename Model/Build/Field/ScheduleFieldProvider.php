@@ -11,8 +11,8 @@ namespace Kingletas\CatalogIndex\Model\Build\Field;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use Kingletas\CatalogIndex\Model\Build\BuildContext;
-use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Magento\Catalog\Model\Product;
 use Throwable;
 
@@ -36,7 +36,7 @@ class ScheduleFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function contribute(Product $product, DocumentDraft $draft, BuildContext $context): void
+    public function contribute(Product $product, DocumentDraftInterface $draft, BuildContextInterface $context): void
     {
         if ($draft->isExcluded()) {
             return;
@@ -51,14 +51,18 @@ class ScheduleFieldProvider extends AbstractFieldProvider
         }
     }
 
-    private function schedule(DocumentDraft $draft, mixed $value, int $daysAfter, BuildContext $context): void
-    {
+    private function schedule(
+        DocumentDraftInterface $draft,
+        mixed $value,
+        int $daysAfter,
+        BuildContextInterface $context
+    ): void {
         if (!is_string($value) || trim($value) === '') {
             return;
         }
 
         try {
-            $zone = new DateTimeZone($context->timezone);
+            $zone = new DateTimeZone($context->getTimezone());
             $day = new DateTimeImmutable(substr(trim($value), 0, 10) . ' 00:00:00', $zone);
         } catch (Throwable) {
             return;
@@ -66,7 +70,7 @@ class ScheduleFieldProvider extends AbstractFieldProvider
 
         $moment = $day->modify(sprintf('+%d day', $daysAfter))->setTimezone(new DateTimeZone('UTC'));
 
-        if ($moment > $context->now) {
+        if ($moment > $context->getNow()) {
             $draft->refreshAt($moment);
         }
     }

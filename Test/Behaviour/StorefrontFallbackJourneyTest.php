@@ -9,19 +9,19 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Behaviour;
 
+use Kingletas\CatalogIndex\Api\Data\PageType;
+use Kingletas\CatalogIndex\Model\Store\DocumentSchema;
 use Kingletas\CatalogIndex\Model\Build\StoredAttributes;
 use Kingletas\CatalogIndex\Model\Index\IndexNamer;
 use Kingletas\CatalogIndex\Model\Metric\MetricStorage;
 use Kingletas\CatalogIndex\Model\Read\CircuitBreaker;
 use Kingletas\CatalogIndex\Model\Read\CollectionHydrator;
+use Kingletas\CatalogIndex\Model\Read\Configurable\ServedAttributes;
+use Kingletas\CatalogIndex\Model\Read\Configurable\ServedOptions;
 use Kingletas\CatalogIndex\Model\Read\DocumentAttributeCodes;
 use Kingletas\CatalogIndex\Model\Read\DocumentReader;
 use Kingletas\CatalogIndex\Model\Read\FallbackRecorder;
 use Kingletas\CatalogIndex\Model\Read\PageScope;
-use Kingletas\CatalogIndex\Model\Read\PageType;
-use Kingletas\CatalogIndex\Model\Read\Configurable\ServedAttributes;
-use Kingletas\CatalogIndex\Model\Read\Configurable\ServedOptions;
-use Kingletas\CatalogIndex\Test\Support\LinkFieldDouble;
 use Kingletas\CatalogIndex\Model\Read\ProductHydrator;
 use Kingletas\CatalogIndex\Model\Read\ReadContext;
 use Kingletas\CatalogIndex\Model\Read\ReadContextResolver;
@@ -29,11 +29,12 @@ use Kingletas\CatalogIndex\Model\Read\ReadGate;
 use Kingletas\CatalogIndex\Observer\Read\FillDocumentAttributes;
 use Kingletas\CatalogIndex\Observer\Read\SkipDocumentAttributes;
 use Kingletas\CatalogIndex\Plugin\Layer\MarkCategoryListing;
-use Kingletas\Foundation\Test\Support\ArrayCache;
-use Kingletas\Foundation\Test\Support\FakeClock;
 use Kingletas\CatalogIndex\Test\Support\InMemoryDocumentStore;
+use Kingletas\CatalogIndex\Test\Support\LinkFieldDouble;
 use Kingletas\CatalogIndex\Test\Support\ProductDoubles;
 use Kingletas\CatalogIndex\Test\Support\ShippedConfig;
+use Kingletas\Foundation\Test\Support\ArrayCache;
+use Kingletas\Foundation\Test\Support\FakeClock;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Layer\CollectionFilterInterface;
 use Magento\Catalog\Model\Product;
@@ -120,7 +121,7 @@ class StorefrontFallbackJourneyTest extends TestCase
      */
     private function renderCategoryPage(): array
     {
-        $config = $this->config(['read/category_listing' => '1', 'read/breaker_failures' => '3']);
+        $config = $this->config(['pages/category_listing' => '1', 'breaker/failures' => '3']);
         $scope = new PageScope();
         $items = [$this->product(['entity_id' => 5]), $this->product(['entity_id' => 6])];
         $collection = $this->createMock(Collection::class);
@@ -157,7 +158,7 @@ class StorefrontFallbackJourneyTest extends TestCase
         $contexts->method('resolve')->willReturn(new ReadContext(PageType::CategoryListing, 1, 1, 0));
         $gate = new ReadGate($config, $breaker);
         $hydrator = new CollectionHydrator(
-            new DocumentReader($this->store, new IndexNamer($config), $breaker),
+            new DocumentReader($this->store, new IndexNamer($config), $breaker, new DocumentSchema()),
             $contexts,
             new ProductHydrator(
                 $config,

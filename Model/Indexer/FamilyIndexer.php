@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Indexer;
 
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Rebuild\FullRebuild;
 use Kingletas\CatalogIndex\Model\Update\RefresherPool;
 use Magento\Framework\Indexer\ActionInterface as IndexerAction;

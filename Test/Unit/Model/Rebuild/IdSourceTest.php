@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Rebuild;
 
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\ScopeResolver;
 use Kingletas\CatalogIndex\Model\Rebuild\IdSource;
 use Kingletas\CatalogIndex\Test\Support\StubbedDatabase;

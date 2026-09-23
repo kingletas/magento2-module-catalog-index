@@ -9,11 +9,12 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\PageType;
+use Kingletas\CatalogIndex\Model\Store\DocumentSchema;
 use Kingletas\CatalogIndex\Exception\DocumentStoreException;
 use Kingletas\CatalogIndex\Model\Index\IndexNamer;
 use Kingletas\CatalogIndex\Model\Read\CircuitBreaker;
 use Kingletas\CatalogIndex\Model\Read\DocumentReader;
-use Kingletas\CatalogIndex\Model\Read\PageType;
 use Kingletas\CatalogIndex\Model\Read\ReadContext;
 use Kingletas\CatalogIndex\Test\Support\InMemoryDocumentStore;
 use Kingletas\CatalogIndex\Test\Support\ShippedConfig;
@@ -51,7 +52,7 @@ class DocumentReaderTest extends TestCase
 
         $this->expectException(DocumentStoreException::class);
 
-        (new DocumentReader($store, new IndexNamer($this->config()), $breaker))
+        (new DocumentReader($store, new IndexNamer($this->config()), $breaker, new DocumentSchema()))
             ->categories([12], new ReadContext(PageType::CategoryView, 1, 1, 0));
     }
 
@@ -114,8 +115,28 @@ class DocumentReaderTest extends TestCase
         $this->assertSame(2, $store->calls('fetch'));
     }
 
+    /**
+     * A document from before a schema change is left out, so the page falls back until a rebuild rewrites it.
+     */
+    public function testADocumentInAnOlderSchemaIsReadAsMissing(): void
+    {
+        $store = new InMemoryDocumentStore();
+        $store->seed('kingletas_catalog_product_1', '5', ['type_id' => 'simple']);
+        $store->seed('kingletas_catalog_product_1', '6', ['type_id' => 'simple', DocumentSchema::FIELD => 0]);
+        $store->seed('kingletas_catalog_product_1', '7', ['type_id' => 'simple', DocumentSchema::FIELD => null]);
+
+        $views = $this->reader($store)->products([5, 6, 7], new ReadContext(PageType::CategoryListing, 1, 1, 0));
+
+        $this->assertSame([5], array_keys($views));
+    }
+
     private function reader(InMemoryDocumentStore $store): DocumentReader
     {
-        return new DocumentReader($store, new IndexNamer($this->config()), $this->createMock(CircuitBreaker::class));
+        return new DocumentReader(
+            $store,
+            new IndexNamer($this->config()),
+            $this->createMock(CircuitBreaker::class),
+            new DocumentSchema()
+        );
     }
 }

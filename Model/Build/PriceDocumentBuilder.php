@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Build;
 
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Magento\Framework\App\ResourceConnection;
 
 /**
@@ -58,7 +59,7 @@ class PriceDocumentBuilder
 
         foreach ($groups as $productId => $byGroup) {
             $draft = new DocumentDraft($productId, $websiteId);
-            $draft->set('groups', $byGroup, DocumentDraft::GROUP_LISTING);
+            $draft->set('groups', $byGroup, DocumentDraftInterface::GROUP_LISTING);
             $documents[] = $this->fingerprints->document($draft, $version);
         }
 

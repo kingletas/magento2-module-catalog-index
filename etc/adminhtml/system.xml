@@ -98,7 +98,7 @@
                 </field>
             </group>
 
-            <group id="read" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="pages" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Pages Served from Documents</label>
                 <field id="category_listing" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Category Product Lists</label>
@@ -122,16 +122,6 @@
                     <comment>Fills every category list a page builds, including the top menu and the layered navigation counts.</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="configurable_options" translate="label comment" type="select" sortOrder="47" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Configurable Swatches and Options</label>
-                    <comment>Answers the option query Magento runs once per swatch attribute per product. Leave this off when a website uses a stock other than the default one and the store hides out of stock products, because Magento Inventory filters those options by salability there.</comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="configurable_attributes" translate="label comment" type="select" sortOrder="48" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Configurable Attribute Rows</label>
-                    <comment>Answers the two queries Magento runs once per configurable product to learn which attributes tell its variants apart, and what to call them in this store.</comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
                 <field id="linked_products" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Related, Up-sell and Cross-sell Blocks</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -144,11 +134,28 @@
                     <label>GraphQL Product Queries</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="breaker_failures" translate="label" type="text" sortOrder="90" showInDefault="1" canRestore="1">
+            </group>
+            <group id="features" translate="label" type="text" sortOrder="42" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Configurable Product Data</label>
+                <field id="configurable_options" translate="label comment" type="select" sortOrder="47" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Configurable Swatches and Options</label>
+                    <comment>Answers the option query Magento runs once per swatch attribute per product. Leave this off when a website uses a stock other than the default one and the store hides out of stock products, because Magento Inventory filters those options by salability there.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="configurable_attributes" translate="label comment" type="select" sortOrder="48" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Configurable Attribute Rows</label>
+                    <comment>Answers the two queries Magento runs once per configurable product to learn which attributes tell its variants apart, and what to call them in this store.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="breaker" translate="label comment" type="text" sortOrder="44" showInDefault="1">
+                <label>When OpenSearch Fails</label>
+                <comment>After this many failed reads in a row, pages stop asking OpenSearch and read the database until the pause is over.</comment>
+                <field id="failures" translate="label" type="text" sortOrder="90" showInDefault="1" canRestore="1">
                     <label>Failures Before Pausing Reads</label>
                     <validate>validate-digits validate-greater-than-zero</validate>
                 </field>
-                <field id="breaker_cooldown" translate="label" type="text" sortOrder="100" showInDefault="1" canRestore="1">
+                <field id="cooldown" translate="label" type="text" sortOrder="100" showInDefault="1" canRestore="1">
                     <label>Pause Length (seconds)</label>
                     <validate>validate-digits validate-greater-than-zero</validate>
                 </field>

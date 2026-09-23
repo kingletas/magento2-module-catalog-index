@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Observer\Read;
 
+use Kingletas\CatalogIndex\Api\Data\PageType;
 use Kingletas\CatalogIndex\Api\DocumentReaderInterface;
 use Kingletas\CatalogIndex\Exception\DocumentStoreException;
 use Kingletas\CatalogIndex\Model\Read\CategoryAttributeCodes;
@@ -17,7 +18,6 @@ use Kingletas\CatalogIndex\Model\Read\CategoryHydrator;
 use Kingletas\CatalogIndex\Model\Read\CategoryView;
 use Kingletas\CatalogIndex\Model\Read\FallbackRecorder;
 use Kingletas\CatalogIndex\Model\Read\PageScope;
-use Kingletas\CatalogIndex\Model\Read\PageType;
 use Kingletas\CatalogIndex\Model\Read\ReadContext;
 use Kingletas\CatalogIndex\Model\Read\ReadContextResolver;
 use Kingletas\CatalogIndex\Model\Read\ReadDecision;

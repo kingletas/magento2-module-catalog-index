@@ -9,32 +9,36 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\CategoryViewInterface;
 use Kingletas\CatalogIndex\Api\Data\DocumentInterface;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\ReadContextInterface;
 use Kingletas\CatalogIndex\Api\DocumentReaderInterface;
 use Kingletas\CatalogIndex\Api\DocumentStoreInterface;
 use Kingletas\CatalogIndex\Exception\DocumentStoreException;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\IndexNamer;
+use Kingletas\CatalogIndex\Model\Store\DocumentSchema;
 
 /**
  * Reads product, price and stock documents for a page in a single round trip.
  */
 class DocumentReader implements DocumentReaderInterface
 {
-    /** @var array<string, array<int, CategoryView|null>> Index alias to category id to what was read, or null. */
+    /** @var array<string, array<int, CategoryViewInterface|null>> Index alias to category id to what was read, or null. */
     private array $categoriesRead = [];
 
     public function __construct(
         private readonly DocumentStoreInterface $store,
         private readonly IndexNamer $namer,
-        private readonly CircuitBreaker $breaker
+        private readonly CircuitBreaker $breaker,
+        private readonly DocumentSchema $schema
     ) {
     }
 
     /**
      * @inheritDoc
      */
-    public function products(array $productIds, ReadContext $context): array
+    public function products(array $productIds, ReadContextInterface $context): array
     {
         $ids = array_values(array_unique(array_map('strval', array_map('intval', $productIds))));
 
@@ -42,9 +46,9 @@ class DocumentReader implements DocumentReaderInterface
             return [];
         }
 
-        $products = $this->namer->alias(IndexFamily::Product, $context->storeId);
-        $prices = $this->namer->alias(IndexFamily::Price, $context->websiteId);
-        $stock = $this->namer->alias(IndexFamily::Stock, $context->websiteId);
+        $products = $this->namer->alias(IndexFamily::Product, $context->getStoreId());
+        $prices = $this->namer->alias(IndexFamily::Price, $context->getWebsiteId());
+        $stock = $this->namer->alias(IndexFamily::Stock, $context->getWebsiteId());
         $found = $this->fetch([$products => $ids, $prices => $ids, $stock => $ids]);
         $views = [];
 
@@ -56,7 +60,7 @@ class DocumentReader implements DocumentReaderInterface
             }
 
             $groups = isset($found[$prices][$id]) ? (array) $found[$prices][$id]->get('groups', []) : [];
-            $price = $groups[(string) $context->customerGroupId] ?? null;
+            $price = $groups[(string) $context->getCustomerGroupId()] ?? null;
             $views[(int) $id] = new ProductView(
                 (int) $id,
                 $document->getSource(),
@@ -71,7 +75,7 @@ class DocumentReader implements DocumentReaderInterface
     /**
      * @inheritDoc
      */
-    public function categories(array $categoryIds, ReadContext $context): array
+    public function categories(array $categoryIds, ReadContextInterface $context): array
     {
         $ids = array_values(array_unique(array_map('strval', array_map('intval', $categoryIds))));
 
@@ -79,7 +83,7 @@ class DocumentReader implements DocumentReaderInterface
             return [];
         }
 
-        $index = $this->namer->alias(IndexFamily::Category, $context->storeId);
+        $index = $this->namer->alias(IndexFamily::Category, $context->getStoreId());
         $this->readCategories($index, $ids);
         $views = [];
 
@@ -137,6 +141,24 @@ class DocumentReader implements DocumentReaderInterface
         }
 
         $this->breaker->recordSuccess();
+
+        return $this->currentOnly($found);
+    }
+
+    /**
+     * A document written in an older shape is left out, so the page reads the database until a rebuild.
+     *
+     * @param array<string, array<string, DocumentInterface>> $found
+     * @return array<string, array<string, DocumentInterface>>
+     */
+    private function currentOnly(array $found): array
+    {
+        foreach ($found as $index => $documents) {
+            $found[$index] = array_filter(
+                $documents,
+                fn (DocumentInterface $document): bool => $this->schema->isCurrent($document)
+            );
+        }
 
         return $found;
     }

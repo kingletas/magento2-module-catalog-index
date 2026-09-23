@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Model\Build\Field;
 
 use Kingletas\CatalogIndex\Api\FieldProviderInterface;
-use Kingletas\CatalogIndex\Model\Build\BuildContext;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
 
 /**
  * A provider with nothing to prepare or release.
@@ -25,7 +25,7 @@ abstract class AbstractFieldProvider implements FieldProviderInterface
     /**
      * @inheritDoc
      */
-    public function prepareBatch(array $products, BuildContext $context): void
+    public function prepareBatch(array $products, BuildContextInterface $context): void
     {
     }
 

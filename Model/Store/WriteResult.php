@@ -9,10 +9,12 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Store;
 
+use Kingletas\CatalogIndex\Api\Data\WriteResultInterface;
+
 /**
  * What a bulk write did to each document.
  */
-class WriteResult
+class WriteResult implements WriteResultInterface
 {
     /**
      * @param string[] $written
@@ -20,23 +22,53 @@ class WriteResult
      * @param array<string, string> $failed Document id to the reason the store gave.
      */
     public function __construct(
-        public readonly array $written = [],
-        public readonly array $stale = [],
-        public readonly array $failed = []
+        private readonly array $written = [],
+        private readonly array $stale = [],
+        private readonly array $failed = []
     ) {
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getWritten(): array
+    {
+        return $this->written;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getStale(): array
+    {
+        return $this->stale;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getFailed(): array
+    {
+        return $this->failed;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function isClean(): bool
     {
         return $this->failed === [];
     }
 
-    public function merge(WriteResult $other): WriteResult
+    /**
+     * @inheritDoc
+     */
+    public function merge(WriteResultInterface $other): WriteResultInterface
     {
         return new WriteResult(
-            array_merge($this->written, $other->written),
-            array_merge($this->stale, $other->stale),
-            $this->failed + $other->failed
+            array_merge($this->written, $other->getWritten()),
+            array_merge($this->stale, $other->getStale()),
+            $this->failed + $other->getFailed()
         );
     }
 }

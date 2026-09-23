@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\PageType;
 use WeakMap;
 
 /**

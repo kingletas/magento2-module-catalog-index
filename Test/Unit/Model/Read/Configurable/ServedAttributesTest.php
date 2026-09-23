@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Read\Configurable;
 
+use Kingletas\CatalogIndex\Api\Data\ConfigurableViewInterface;
 use Kingletas\CatalogIndex\Model\Read\Configurable\ServedAttributes;
 use Kingletas\CatalogIndex\Model\Read\ConfigurableView;
 use PHPUnit\Framework\TestCase;
@@ -48,7 +49,36 @@ class ServedAttributesTest extends TestCase
         $this->assertNull($served->forProduct(5));
     }
 
-    private function view(): ConfigurableView
+    /**
+     * A product that arrives already answered, and that this module was never asked about, went to another plugin.
+     */
+    public function testAnAnswerThisModuleNeverGaveIsAPreemptionOnce(): void
+    {
+        $served = new ServedAttributes();
+        $served->remember($this->view(), 5);
+
+        $this->assertTrue($served->notePreempted(5));
+        $this->assertFalse($served->notePreempted(5));
+    }
+
+    /**
+     * Magento keeps the collection this module built, so asking again finds it there and is not a pre-emption.
+     */
+    public function testAProductThisModuleWasAskedAboutIsNeverAPreemption(): void
+    {
+        $served = new ServedAttributes();
+        $served->remember($this->view(), 5);
+        $served->forProduct(5);
+
+        $this->assertFalse($served->notePreempted(5));
+    }
+
+    public function testAProductWithNoDocumentIsNeverAPreemption(): void
+    {
+        $this->assertFalse((new ServedAttributes())->notePreempted(5));
+    }
+
+    private function view(): ConfigurableViewInterface
     {
         return new ConfigurableView(['super_attributes' => [['attribute_id' => 93, 'super_attribute_id' => 11]]]);
     }

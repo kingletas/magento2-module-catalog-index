@@ -10,11 +10,11 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Update;
 
 use DateTimeImmutable;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Build\BuildBatch;
-use Kingletas\CatalogIndex\Model\Build\BuildContext;
 use Kingletas\CatalogIndex\Model\Build\ProductDocumentBuilder;
 use Kingletas\CatalogIndex\Model\Cache\PurgePlanner;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
 use Kingletas\CatalogIndex\Model\Schedule\ScheduleStorage;
 use Kingletas\CatalogIndex\Model\Store\Document;
 use Kingletas\CatalogIndex\Model\Update\ProductRefresher;
@@ -63,18 +63,21 @@ class ProductRefresherTest extends RefresherTestCase
     private function refresher(array $config = []): ProductRefresher
     {
         $builder = $this->createMock(ProductDocumentBuilder::class);
-        $builder->method('build')->willReturnCallback(function (array $ids, BuildContext $context): BuildBatch {
+        $build = function (array $ids, BuildContextInterface $context): BuildBatch {
             $this->built[] = $ids;
             $documents = array_map(
-                static fn (int $id): Document => new Document((string) $id, $context->version, [
+                static fn (int $id): Document => new Document((string) $id, $context->getVersion(), [
                     '_fp' => ['listing' => 'same-' . $id],
                     'category_ids' => [12],
                 ]),
                 $ids
             );
 
-            return new BuildBatch($context->version, $documents, [], [51 => [new DateTimeImmutable('@2000000000')]]);
-        });
+            $moments = [51 => [new DateTimeImmutable('@2000000000')]];
+
+            return new BuildBatch($context->getVersion(), $documents, [], $moments);
+        };
+        $builder->method('build')->willReturnCallback($build);
         $schedule = $this->createMock(ScheduleStorage::class);
         $schedule->method('record')->willReturnCallback(function (
             IndexFamily $family,

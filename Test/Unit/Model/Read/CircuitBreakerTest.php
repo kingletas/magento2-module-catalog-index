@@ -23,7 +23,7 @@ class CircuitBreakerTest extends TestCase
     {
         $cache = new ArrayCache();
         $clock = new FakeClock();
-        $config = $this->config(['read/breaker_failures' => '2', 'read/breaker_cooldown' => '30']);
+        $config = $this->config(['breaker/failures' => '2', 'breaker/cooldown' => '30']);
 
         $first = new CircuitBreaker($cache, $config, $clock);
         $first->recordFailure();
@@ -52,7 +52,7 @@ class CircuitBreakerTest extends TestCase
     public function testASuccessForgetsEarlierFailures(): void
     {
         $cache = new ArrayCache();
-        $breaker = new CircuitBreaker($cache, $this->config(['read/breaker_failures' => '2']), new FakeClock());
+        $breaker = new CircuitBreaker($cache, $this->config(['breaker/failures' => '2']), new FakeClock());
 
         $breaker->recordFailure();
         $breaker->recordSuccess();

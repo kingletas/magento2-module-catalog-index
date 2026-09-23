@@ -10,11 +10,13 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Api;
 
 use Kingletas\CatalogIndex\Api\Data\DocumentInterface;
+use Kingletas\CatalogIndex\Api\Data\WriteResultInterface;
 use Kingletas\CatalogIndex\Exception\DocumentStoreException;
-use Kingletas\CatalogIndex\Model\Store\WriteResult;
 
 /**
  * Reads and writes documents, addressed by index or alias name.
+ *
+ * @api
  */
 interface DocumentStoreInterface
 {
@@ -24,13 +26,13 @@ interface DocumentStoreInterface
      * @param DocumentInterface[] $documents
      * @throws DocumentStoreException
      */
-    public function write(string $index, array $documents): WriteResult;
+    public function write(string $index, array $documents): WriteResultInterface;
 
     /**
      * @param string[] $ids
      * @throws DocumentStoreException
      */
-    public function delete(string $index, array $ids, int $version): WriteResult;
+    public function delete(string $index, array $ids, int $version): WriteResultInterface;
 
     /**
      * Reads documents from several indexes in one round trip.

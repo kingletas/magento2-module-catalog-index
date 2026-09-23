@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Model\Build;
 
 use InvalidArgumentException;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
 use Kingletas\CatalogIndex\Api\FieldProviderInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
@@ -48,13 +49,13 @@ class ProductDocumentBuilder
     /**
      * @param int[] $productIds
      */
-    public function build(array $productIds, BuildContext $context): BuildBatch
+    public function build(array $productIds, BuildContextInterface $context): BuildBatch
     {
         $productIds = array_filter(array_map('intval', $productIds), static fn (int $id): bool => $id > 0);
         $productIds = array_values(array_unique($productIds));
 
         if ($productIds === []) {
-            return new BuildBatch($context->version);
+            return new BuildBatch($context->getVersion());
         }
 
         $products = $this->load($productIds, $context);
@@ -78,14 +79,18 @@ class ProductDocumentBuilder
      * @param array<int, Product> $products
      * @param FieldProviderInterface[] $providers
      */
-    private function assemble(array $productIds, array $products, array $providers, BuildContext $context): BuildBatch
-    {
+    private function assemble(
+        array $productIds,
+        array $products,
+        array $providers,
+        BuildContextInterface $context
+    ): BuildBatch {
         $documents = [];
         $removed = array_values(array_diff($productIds, array_keys($products)));
         $moments = [];
 
         foreach ($products as $productId => $product) {
-            $draft = new DocumentDraft($productId, $context->storeId);
+            $draft = new DocumentDraft($productId, $context->getStoreId());
 
             foreach ($providers as $provider) {
                 $provider->contribute($product, $draft, $context);
@@ -97,7 +102,7 @@ class ProductDocumentBuilder
                 continue;
             }
 
-            $documents[] = $this->fingerprints->document($draft, $context->version);
+            $documents[] = $this->fingerprints->document($draft, $context->getVersion());
 
             if ($draft->refreshMoments() !== []) {
                 $moments[$productId] = $draft->refreshMoments();
@@ -106,18 +111,18 @@ class ProductDocumentBuilder
 
         sort($removed);
 
-        return new BuildBatch($context->version, $documents, $removed, $moments);
+        return new BuildBatch($context->getVersion(), $documents, $removed, $moments);
     }
 
     /**
      * @param int[] $productIds
      * @return array<int, Product>
      */
-    private function load(array $productIds, BuildContext $context): array
+    private function load(array $productIds, BuildContextInterface $context): array
     {
         $collection = $this->collectionFactory->create();
-        $collection->setStoreId($context->storeId);
-        $collection->addStoreFilter($context->storeId);
+        $collection->setStoreId($context->getStoreId());
+        $collection->addStoreFilter($context->getStoreId());
         $collection->addIdFilter($productIds);
         $collection->addAttributeToSelect('*');
         $collection->setFlag('has_stock_status_filter', true);

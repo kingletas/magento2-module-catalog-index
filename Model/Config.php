@@ -108,62 +108,62 @@ class Config extends ModuleConfig
 
     public function isCategoryListingEnabled(int $storeId): bool
     {
-        return $this->isSetFlag('read/category_listing', $storeId);
+        return $this->isSetFlag('pages/category_listing', $storeId);
     }
 
     public function isSearchListingEnabled(int $storeId): bool
     {
-        return $this->isSetFlag('read/search_listing', $storeId);
+        return $this->isSetFlag('pages/search_listing', $storeId);
     }
 
     public function isProductViewEnabled(int $storeId): bool
     {
-        return $this->isSetFlag('read/product_view', $storeId);
+        return $this->isSetFlag('pages/product_view', $storeId);
     }
 
     public function isCategoryViewEnabled(int $storeId): bool
     {
-        return $this->isSetFlag('read/category_view', $storeId);
+        return $this->isSetFlag('pages/category_view', $storeId);
     }
 
     public function isCategoryTreeEnabled(int $storeId): bool
     {
-        return $this->isSetFlag('read/category_tree', $storeId);
+        return $this->isSetFlag('pages/category_tree', $storeId);
     }
 
     public function isLinkedProductsEnabled(int $storeId): bool
     {
-        return $this->isSetFlag('read/linked_products', $storeId);
+        return $this->isSetFlag('pages/linked_products', $storeId);
     }
 
     public function isWidgetEnabled(int $storeId): bool
     {
-        return $this->isSetFlag('read/widget', $storeId);
+        return $this->isSetFlag('pages/widget', $storeId);
     }
 
     public function isGraphQlEnabled(int $storeId): bool
     {
-        return $this->isSetFlag('read/graphql', $storeId);
+        return $this->isSetFlag('pages/graphql', $storeId);
     }
 
     public function isConfigurableOptionsEnabled(int $storeId): bool
     {
-        return $this->isSetFlag('read/configurable_options', $storeId);
+        return $this->isSetFlag('features/configurable_options', $storeId);
     }
 
     public function isConfigurableAttributesEnabled(int $storeId): bool
     {
-        return $this->isSetFlag('read/configurable_attributes', $storeId);
+        return $this->isSetFlag('features/configurable_attributes', $storeId);
     }
 
     public function getBreakerFailures(): int
     {
-        return $this->getPositiveInt('read/breaker_failures', 5);
+        return $this->getPositiveInt('breaker/failures', 5);
     }
 
     public function getBreakerCooldownSeconds(): int
     {
-        return $this->getPositiveInt('read/breaker_cooldown', 30);
+        return $this->getPositiveInt('breaker/cooldown', 30);
     }
 
     public function getUpdateMode(): string

@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Schedule;
 
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\StateStorage;
 use Kingletas\CatalogIndex\Model\Schedule\ScheduledRefresh;
 use Kingletas\CatalogIndex\Model\Schedule\ScheduleRunner;

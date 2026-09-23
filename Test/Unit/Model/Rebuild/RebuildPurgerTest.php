@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Rebuild;
 
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Cache\PurgePlanner;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
 use Kingletas\CatalogIndex\Model\Rebuild\RebuildPurger;
 use Kingletas\CatalogIndex\Model\Rebuild\RebuildReport;
 use Kingletas\CatalogIndex\Model\Update\AffectedProductResolver;

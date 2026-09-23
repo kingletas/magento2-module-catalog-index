@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Model\Schedule;
 
 use DateTimeImmutable;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Magento\Framework\App\ResourceConnection;
 use Zend_Db_Expr;
 

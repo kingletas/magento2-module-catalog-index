@@ -9,9 +9,10 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Rebuild;
 
+use Kingletas\CatalogIndex\Api\Data\ChangeSetInterface;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Api\RefresherInterface;
 use Kingletas\CatalogIndex\Model\Index\IndexDefinition;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\IndexNamer;
 use Kingletas\CatalogIndex\Model\Index\ScopeResolver;
 use Kingletas\CatalogIndex\Model\Index\StateStorage;
@@ -23,12 +24,12 @@ use Kingletas\CatalogIndex\Model\Store\Document;
 use Kingletas\CatalogIndex\Model\Update\Change;
 use Kingletas\CatalogIndex\Model\Update\ChangeSet;
 use Kingletas\CatalogIndex\Model\Update\RefresherPool;
-use Kingletas\Foundation\Test\Support\FakeClock;
 use Kingletas\CatalogIndex\Test\Support\InMemoryDocumentStore;
 use Kingletas\CatalogIndex\Test\Support\ShippedConfig;
+use Kingletas\Foundation\Model\Lock\LockRunner;
+use Kingletas\Foundation\Test\Support\FakeClock;
 use Magento\Framework\Lock\LockManagerInterface;
 use PHPUnit\Framework\TestCase;
-use Kingletas\Foundation\Model\Lock\LockRunner;
 use Psr\Log\NullLogger;
 
 class FullRebuildTest extends TestCase
@@ -124,7 +125,7 @@ class FullRebuildTest extends TestCase
         $refresher = $this->createMock(RefresherInterface::class);
         $refresher->method('family')->willReturn(IndexFamily::Product);
         $refresher->method('refreshInto')->willReturnCallback(
-            function (array $ids, int $scope, string $write, string $compare): ChangeSet {
+            function (array $ids, int $scope, string $write, string $compare): ChangeSetInterface {
                 if ($this->failBuild) {
                     throw new \RuntimeException('store refused');
                 }

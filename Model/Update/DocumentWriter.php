@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Update;
 
+use Kingletas\CatalogIndex\Api\Data\ChangeInterface;
+use Kingletas\CatalogIndex\Api\Data\ChangeSetInterface;
 use Kingletas\CatalogIndex\Api\Data\DocumentInterface;
 use Kingletas\CatalogIndex\Api\DocumentStoreInterface;
 use Kingletas\CatalogIndex\Model\Build\BuildBatch;
@@ -27,8 +29,12 @@ class DocumentWriter
     ) {
     }
 
-    public function replace(string $writeIndex, string $compareIndex, BuildBatch $batch, string $scope = ''): ChangeSet
-    {
+    public function replace(
+        string $writeIndex,
+        string $compareIndex,
+        BuildBatch $batch,
+        string $scope = ''
+    ): ChangeSetInterface {
         $changes = new ChangeSet();
         $ids = array_merge($batch->documentIds(), array_map('strval', $batch->removedIds));
 
@@ -41,7 +47,7 @@ class DocumentWriter
             [DocumentInterface::FINGERPRINTS, self::CATEGORIES]
         )[$compareIndex] ?? [];
         $result = $this->store->write($writeIndex, $batch->documents);
-        $accepted = array_fill_keys($result->written, true);
+        $accepted = array_fill_keys($result->getWritten(), true);
 
         foreach ($batch->documents as $document) {
             if (isset($accepted[$document->getId()])) {
@@ -58,19 +64,19 @@ class DocumentWriter
             $deleted = $this->store->delete($writeIndex, $gone, $batch->version);
             $result = $result->merge($deleted);
 
-            foreach ($deleted->written as $id) {
+            foreach ($deleted->getWritten() as $id) {
                 $categories = $this->categories($before[$id] ?? null);
                 $changes->add(new Change((int) $id, false, true, [], $categories), $scope);
             }
         }
 
-        $changes->record(count($result->written), count($result->stale), $result->failed);
-        $this->reportFailures($writeIndex, $result->failed);
+        $changes->record(count($result->getWritten()), count($result->getStale()), $result->getFailed());
+        $this->reportFailures($writeIndex, $result->getFailed());
 
         return $changes;
     }
 
-    private function compare(?DocumentInterface $before, DocumentInterface $after): Change
+    private function compare(?DocumentInterface $before, DocumentInterface $after): ChangeInterface
     {
         $afterCategories = $this->categories($after);
 

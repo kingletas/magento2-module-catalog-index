@@ -9,13 +9,15 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\ConfigurableViewInterface;
+use Kingletas\CatalogIndex\Api\Data\ProductViewInterface;
 use Magento\Catalog\Model\Product\Type;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 
 /**
  * One product as a page sees it: its document, its price for the shopper's group, and its stock.
  */
-class ProductView
+class ProductView implements ProductViewInterface
 {
     private const array SERVABLE_DETAIL_TYPES = [Type::TYPE_SIMPLE, Type::TYPE_VIRTUAL, Configurable::TYPE_CODE];
 
@@ -29,7 +31,7 @@ class ProductView
         'has_options',
     ];
 
-    public readonly ConfigurableView $configurable;
+    private readonly ConfigurableViewInterface $configurable;
 
     /**
      * @param array<string, mixed> $source
@@ -37,7 +39,7 @@ class ProductView
      * @param array<string, mixed>|null $stock
      */
     public function __construct(
-        public readonly int $id,
+        private readonly int $id,
         private readonly array $source,
         private readonly ?array $price = null,
         private readonly ?array $stock = null
@@ -45,19 +47,41 @@ class ProductView
         $this->configurable = new ConfigurableView($source);
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getConfigurable(): ConfigurableViewInterface
+    {
+        return $this->configurable;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function typeId(): string
     {
         return (string) ($this->source['type_id'] ?? '');
     }
 
     /**
-     * @return array<string, mixed> Every attribute value, listing and detail together.
+     * @inheritDoc
      */
     public function attributes(): array
     {
         return $this->map('detail_attributes') + $this->map('listing_attributes') + $this->identity();
     }
 
+    /**
+     * @inheritDoc
+     */
     public function requestPath(): ?string
     {
         $path = $this->source['request_path'] ?? null;
@@ -66,7 +90,7 @@ class ProductView
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @inheritDoc
      */
     public function mediaGallery(): ?array
     {
@@ -76,7 +100,7 @@ class ProductView
     }
 
     /**
-     * @return array<int, array<string, mixed>>|null
+     * @inheritDoc
      */
     public function tierPrice(): ?array
     {
@@ -86,7 +110,7 @@ class ProductView
     }
 
     /**
-     * @return array{rating_summary: int, reviews_count: int}|null
+     * @inheritDoc
      */
     public function reviewSummary(): ?array
     {
@@ -101,9 +125,7 @@ class ProductView
     }
 
     /**
-     * Null when the document carries no category list, which is not the same as a product in no category.
-     *
-     * @return int[]|null
+     * @inheritDoc
      */
     public function categoryIds(): ?array
     {
@@ -113,20 +135,23 @@ class ProductView
     }
 
     /**
-     * @return array<string, mixed>|null Prices for the shopper's customer group.
+     * @inheritDoc
      */
     public function price(): ?array
     {
         return $this->price;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function isSalable(): ?bool
     {
         return $this->stock === null ? null : (bool) ($this->stock['is_salable'] ?? false);
     }
 
     /**
-     * A product page can be built from the document only when nothing it renders lives outside it.
+     * @inheritDoc
      */
     public function isDetailServable(): bool
     {

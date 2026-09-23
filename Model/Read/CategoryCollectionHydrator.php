@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\PageType;
 use Kingletas\CatalogIndex\Api\DocumentReaderInterface;
 use Kingletas\CatalogIndex\Exception\DocumentStoreException;
 use Magento\Catalog\Model\Category;

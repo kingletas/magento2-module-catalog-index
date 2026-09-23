@@ -1,18 +1,10 @@
 <?xml version="1.0"?>
 <ruleset name="Kingletas_CatalogIndex">
     <description>
-        Magento's own coding standard, plus a hard floor on the PHP version the
-        manifest claims to support.
-
-        The floor is 8.4, which is what the estate runs and what this code is
-        written for: typed class constants need 8.3, and `new Foo()->bar()`
-        needs 8.4. Declaring anything lower would be a promise the code cannot
-        keep — a store on 8.1 would not fatal at runtime, it would fail to
-        parse the file at all.
-
-        Note that PHPCompatibility 9.3 predates PHP 8.1 entirely, so it cannot
-        police this floor on its own. What actually catches a violation is the
-        `php -l` matrix in CI, which runs the real interpreter.
+        Magento's own coding standard, plus a floor on the PHP version the
+        manifest claims to support: 8.4, the version its released siblings
+        require. PHPCompatibility predates PHP 8.1, so the CI syntax check on
+        the real interpreter is what enforces the floor.
     </description>
 
     <file>Api</file>
@@ -23,12 +15,17 @@
     <file>Observer</file>
     <file>Plugin</file>
     <file>Queue</file>
+    <file>Setup</file>
     <file>Test</file>
     <file>registration.php</file>
 
     <!-- Neither is ours to lint: composer writes one, the code generator the other. -->
     <exclude-pattern>vendor/*</exclude-pattern>
     <exclude-pattern>var/*</exclude-pattern>
+    <!-- CI configuration rather than module code: `php -l` lints it, and
+         the Magento standard has nothing to say about a script that never
+         runs inside a store. -->
+    <exclude-pattern>.github/*</exclude-pattern>
 
     <arg name="extensions" value="php"/>
     <arg name="colors"/>

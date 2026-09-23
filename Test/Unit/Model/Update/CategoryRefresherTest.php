@@ -12,7 +12,7 @@ namespace Kingletas\CatalogIndex\Test\Unit\Model\Update;
 use Kingletas\CatalogIndex\Model\Build\BuildBatch;
 use Kingletas\CatalogIndex\Model\Build\CategoryDocumentBuilder;
 use Kingletas\CatalogIndex\Model\Cache\PurgePlanner;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Store\Document;
 use Kingletas\CatalogIndex\Model\Update\CategoryRefresher;
 

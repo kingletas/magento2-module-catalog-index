@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Schedule;
 
 use DateTimeImmutable;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Schedule\ScheduleStorage;
 use Kingletas\CatalogIndex\Test\Support\StubbedDatabase;
 use PHPUnit\Framework\TestCase;

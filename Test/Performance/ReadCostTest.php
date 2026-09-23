@@ -9,25 +9,27 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Performance;
 
+use Kingletas\CatalogIndex\Api\Data\PageType;
+use Kingletas\CatalogIndex\Model\Cache\TagDispatcher;
+use Kingletas\CatalogIndex\Model\Store\DocumentSchema;
 use Kingletas\CatalogIndex\Model\Index\IndexNamer;
 use Kingletas\CatalogIndex\Model\Metric\MetricStorage;
 use Kingletas\CatalogIndex\Model\Read\CircuitBreaker;
 use Kingletas\CatalogIndex\Model\Read\CollectionHydrator;
-use Kingletas\CatalogIndex\Model\Read\DocumentReader;
-use Kingletas\CatalogIndex\Model\Read\FallbackRecorder;
-use Kingletas\CatalogIndex\Model\Read\PageType;
 use Kingletas\CatalogIndex\Model\Read\Configurable\ServedAttributes;
 use Kingletas\CatalogIndex\Model\Read\Configurable\ServedOptions;
-use Kingletas\CatalogIndex\Test\Support\LinkFieldDouble;
+use Kingletas\CatalogIndex\Model\Read\DocumentReader;
+use Kingletas\CatalogIndex\Model\Read\FallbackRecorder;
 use Kingletas\CatalogIndex\Model\Read\ProductHydrator;
 use Kingletas\CatalogIndex\Model\Read\ReadContext;
 use Kingletas\CatalogIndex\Model\Read\ReadContextResolver;
-use Kingletas\Foundation\Test\Support\ArrayCache;
-use Kingletas\Foundation\Test\Support\FakeClock;
 use Kingletas\CatalogIndex\Test\Support\InMemoryDocumentStore;
+use Kingletas\CatalogIndex\Test\Support\LinkFieldDouble;
 use Kingletas\CatalogIndex\Test\Support\ProductDoubles;
 use Kingletas\CatalogIndex\Test\Support\ShippedConfig;
+use Kingletas\Foundation\Test\Support\ArrayCache;
 use Kingletas\Foundation\Test\Support\BudgetAssertions;
+use Kingletas\Foundation\Test\Support\FakeClock;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\Collection;
 use Magento\Framework\App\CacheInterface;
@@ -37,7 +39,6 @@ use Magento\Framework\Indexer\CacheContextFactory;
 use Magento\Framework\Serialize\Serializer\Json;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Kingletas\CatalogIndex\Model\Cache\TagDispatcher;
 
 /**
  * What a storefront page costs when it reads documents, and what a purge costs the cache.
@@ -129,7 +130,12 @@ class ReadCostTest extends TestCase
         $contexts = $this->createMock(ReadContextResolver::class);
         $contexts->method('resolve')->willReturn(new ReadContext(PageType::CategoryListing, 1, 1, 0));
         return new CollectionHydrator(
-            new DocumentReader($store, new IndexNamer($config), new CircuitBreaker($cache, $config, new FakeClock())),
+            new DocumentReader(
+                $store,
+                new IndexNamer($config),
+                new CircuitBreaker($cache, $config, new FakeClock()),
+                new DocumentSchema()
+            ),
             $contexts,
             new ProductHydrator(
                 $config,

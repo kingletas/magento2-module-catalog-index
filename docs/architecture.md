@@ -196,6 +196,7 @@ The entity manager still loads the entity row. `ProductAttributeReader` and `Cat
 | Signal | Where it lives | When it speaks |
 | --- | --- | --- |
 | Fallbacks per page and reason | Application cache, hourly buckets | `status`, marked over budget above the configured share |
+| Swatch attribute collections built from documents, and ones another plugin answered first | Application cache, hourly buckets | `status`, as the `configurable_attributes` row with the reason `preempted` |
 | Circuit breaker | Application cache | Opens after repeated failures, closes after the cooldown |
 | Drift | Hourly sample | Logs a warning above the configured share, again only if it doubles or six hours pass |
 | Backlog | Change log version against the view's processed version | `status` |

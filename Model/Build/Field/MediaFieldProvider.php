@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Build\Field;
 
-use Kingletas\CatalogIndex\Model\Build\BuildContext;
-use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Kingletas\CatalogIndex\Model\Build\LinkField;
 use Magento\Catalog\Model\Product;
 use Magento\Eav\Model\Config as EavConfig;
@@ -37,7 +37,7 @@ class MediaFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function prepareBatch(array $products, BuildContext $context): void
+    public function prepareBatch(array $products, BuildContextInterface $context): void
     {
         $this->images = [];
         $link = $this->linkField->product();
@@ -52,7 +52,7 @@ class MediaFieldProvider extends AbstractFieldProvider
 
         $attributeId = (int) $this->eavConfig->getAttribute(Product::ENTITY, 'media_gallery')->getId();
 
-        foreach ($this->rows($linkIds, $link, $attributeId, $context->storeId) as $row) {
+        foreach ($this->rows($linkIds, $link, $attributeId, $context->getStoreId()) as $row) {
             $this->images[(int) $row['link_id']][(int) $row['value_id']] = [
                 'value_id' => (string) $row['value_id'],
                 'file' => (string) $row['file'],
@@ -80,7 +80,7 @@ class MediaFieldProvider extends AbstractFieldProvider
      *
      * @inheritDoc
      */
-    public function contribute(Product $product, DocumentDraft $draft, BuildContext $context): void
+    public function contribute(Product $product, DocumentDraftInterface $draft, BuildContextInterface $context): void
     {
         if ($draft->isExcluded()) {
             return;
@@ -93,7 +93,7 @@ class MediaFieldProvider extends AbstractFieldProvider
                 <=> [(int) $b['position'], (int) $b['value_id']]
         );
 
-        $draft->set('media_gallery', ['images' => $images, 'values' => []], DocumentDraft::GROUP_DETAIL);
+        $draft->set('media_gallery', ['images' => $images, 'values' => []], DocumentDraftInterface::GROUP_DETAIL);
     }
 
     /**

@@ -9,11 +9,13 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\PageType;
+use Kingletas\CatalogIndex\Api\Data\ProductViewInterface;
+use Kingletas\CatalogIndex\Api\Data\ReadContextInterface;
 use Kingletas\CatalogIndex\Api\DocumentReaderInterface;
 use Kingletas\CatalogIndex\Exception\DocumentStoreException;
 use Kingletas\CatalogIndex\Model\Read\CollectionHydrator;
 use Kingletas\CatalogIndex\Model\Read\FallbackRecorder;
-use Kingletas\CatalogIndex\Model\Read\PageType;
 use Kingletas\CatalogIndex\Model\Read\ProductHydrator;
 use Kingletas\CatalogIndex\Model\Read\ProductView;
 use Kingletas\CatalogIndex\Model\Read\ReadContext;
@@ -73,7 +75,7 @@ class CollectionHydratorTest extends TestCase
     }
 
     /**
-     * @param array<int, ProductView>|null $views Null makes the store fail.
+     * @param array<int, ProductViewInterface>|null $views Null makes the store fail.
      */
     private function hydrator(?array $views): CollectionHydrator
     {
@@ -83,12 +85,13 @@ class CollectionHydratorTest extends TestCase
         });
         $contexts = $this->createMock(ReadContextResolver::class);
         $contexts->method('resolve')->willReturnCallback(
-            static fn (PageType $page): ReadContext => new ReadContext($page, 1, 1, 0)
+            static fn (PageType $page): ReadContextInterface => new ReadContext($page, 1, 1, 0)
         );
         $hydrator = $this->createMock(ProductHydrator::class);
-        $hydrator->method('fillListingItem')->willReturnCallback(static function ($item, ProductView $view): void {
+        $fill = static function ($item, ProductViewInterface $view): void {
             $item->setData('name', $view->attributes()['name']);
-        });
+        };
+        $hydrator->method('fillListingItem')->willReturnCallback($fill);
         $recorder = $this->createMock(FallbackRecorder::class);
         $recorder->method('served')->willReturnCallback(function (PageType $page, int $count): void {
             $this->recorded[] = ['served', $page->value, $count];
@@ -120,7 +123,7 @@ class CollectionHydratorTest extends TestCase
         return $collection;
     }
 
-    private function view(int $id): ProductView
+    private function view(int $id): ProductViewInterface
     {
         return new ProductView($id, ['listing_attributes' => ['name' => 'name-' . $id]]);
     }

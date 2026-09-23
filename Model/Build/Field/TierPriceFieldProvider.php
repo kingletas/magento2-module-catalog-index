@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Build\Field;
 
-use Kingletas\CatalogIndex\Model\Build\BuildContext;
-use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Kingletas\CatalogIndex\Model\Build\LinkField;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\ResourceConnection;
@@ -36,7 +36,7 @@ class TierPriceFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function prepareBatch(array $products, BuildContext $context): void
+    public function prepareBatch(array $products, BuildContextInterface $context): void
     {
         $this->tiers = [];
         $link = $this->linkField->product();
@@ -54,7 +54,7 @@ class TierPriceFieldProvider extends AbstractFieldProvider
             $connection->select()
                 ->from($this->resourceConnection->getTableName('catalog_product_entity_tier_price'))
                 ->where(sprintf('%s IN (?)', $link), $linkIds)
-                ->where('website_id IN (?)', [0, $context->websiteId])
+                ->where('website_id IN (?)', [0, $context->getWebsiteId()])
                 ->order(['qty ASC', 'value_id ASC'])
         );
 
@@ -84,13 +84,13 @@ class TierPriceFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function contribute(Product $product, DocumentDraft $draft, BuildContext $context): void
+    public function contribute(Product $product, DocumentDraftInterface $draft, BuildContextInterface $context): void
     {
         if ($draft->isExcluded()) {
             return;
         }
 
         $tiers = $this->tiers[(int) $product->getData($this->linkField->product())] ?? [];
-        $draft->set('tier_price', $tiers, DocumentDraft::GROUP_DETAIL);
+        $draft->set('tier_price', $tiers, DocumentDraftInterface::GROUP_DETAIL);
     }
 }

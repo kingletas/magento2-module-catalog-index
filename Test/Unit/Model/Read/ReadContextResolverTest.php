@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Read;
 
-use Kingletas\CatalogIndex\Model\Read\PageType;
+use Kingletas\CatalogIndex\Api\Data\PageType;
 use Kingletas\CatalogIndex\Model\Read\ReadContextResolver;
 use Magento\Framework\App\Http\Context as HttpContext;
 use Magento\Store\Model\Store;
@@ -32,9 +32,12 @@ class ReadContextResolverTest extends TestCase
 
         $context = $resolver->resolve(PageType::SearchListing, 4);
 
-        $this->assertSame([4, 2, 3], [$context->storeId, $context->websiteId, $context->customerGroupId]);
-        $this->assertSame(1, $resolver->resolve(PageType::SearchListing, 0)->storeId);
-        $this->assertSame(PageType::SearchListing, $context->page);
+        $this->assertSame(
+            [4, 2, 3],
+            [$context->getStoreId(), $context->getWebsiteId(), $context->getCustomerGroupId()]
+        );
+        $this->assertSame(1, $resolver->resolve(PageType::SearchListing, 0)->getStoreId());
+        $this->assertSame(PageType::SearchListing, $context->getPage());
     }
 
     private function store(int $id, int $websiteId): Store

@@ -11,7 +11,7 @@ namespace Kingletas\CatalogIndex\Test\Unit\Model\Index;
 
 use DateTimeImmutable;
 use InvalidArgumentException;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\IndexNamer;
 use Kingletas\CatalogIndex\Test\Support\ShippedConfig;
 use PHPUnit\Framework\TestCase;

@@ -9,10 +9,12 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Plugin\Configurable;
 
+use Kingletas\CatalogIndex\Api\Data\ConfigurableViewInterface;
 use Kingletas\CatalogIndex\Model\Read\Configurable\AttributeCollectionBuilder;
 use Kingletas\CatalogIndex\Model\Read\Configurable\SeededAttributeCollection;
 use Kingletas\CatalogIndex\Model\Read\Configurable\ServedAttributes;
 use Kingletas\CatalogIndex\Model\Read\ConfigurableView;
+use Kingletas\CatalogIndex\Model\Read\FallbackRecorder;
 use Kingletas\CatalogIndex\Plugin\Configurable\SeedConfigurableAttributes;
 use Kingletas\CatalogIndex\Test\Support\LinkFieldDouble;
 use Magento\Catalog\Model\Product;
@@ -29,6 +31,9 @@ class SeedConfigurableAttributesTest extends TestCase
     /** @var int How many collections were built. */
     private int $built = 0;
 
+    /** @var string[] What the plugin reported to the read counters, in order. */
+    private array $counted = [];
+
     public function testAServedProductIsSeededWhenMagentoAsks(): void
     {
         $served = new ServedAttributes();
@@ -39,6 +44,7 @@ class SeedConfigurableAttributesTest extends TestCase
 
         $this->assertInstanceOf(SeededAttributeCollection::class, $product->getData(self::KEY));
         $this->assertSame(1, $this->built);
+        $this->assertSame(['served'], $this->counted);
     }
 
     public function testAProductNothingWasServedForIsLeftToMagento(): void
@@ -60,12 +66,43 @@ class SeedConfigurableAttributesTest extends TestCase
         $served = new ServedAttributes();
         $served->remember($this->view(), 5);
         $product = $this->product(5);
-        $product->setData(self::KEY, 'already there');
+        $plugin = $this->plugin($served);
 
-        $this->plugin($served)->beforeGetConfigurableAttributes($this->createMock(Configurable::class), $product);
+        $plugin->beforeGetConfigurableAttributes($this->createMock(Configurable::class), $product);
+        $plugin->beforeGetConfigurableAttributes($this->createMock(Configurable::class), $product);
 
-        $this->assertSame('already there', $product->getData(self::KEY));
+        $this->assertSame(1, $this->built);
+        $this->assertSame(['served'], $this->counted);
+    }
+
+    /**
+     * A plugin sorted earlier answered a product this module had a document for, so the document went unused.
+     */
+    public function testAnAnswerAnotherPluginGaveFirstIsCountedAsPreemptedOnce(): void
+    {
+        $served = new ServedAttributes();
+        $served->remember($this->view(), 5);
+        $product = $this->product(5);
+        $product->setData(self::KEY, 'answered elsewhere');
+        $plugin = $this->plugin($served);
+
+        $plugin->beforeGetConfigurableAttributes($this->createMock(Configurable::class), $product);
+        $plugin->beforeGetConfigurableAttributes($this->createMock(Configurable::class), $product);
+
+        $this->assertSame('answered elsewhere', $product->getData(self::KEY));
         $this->assertSame(0, $this->built);
+        $this->assertSame(['preempted'], $this->counted);
+    }
+
+    public function testAnAnsweredProductWithNoDocumentCountsNothing(): void
+    {
+        $product = $this->product(5);
+        $product->setData(self::KEY, 'answered elsewhere');
+
+        $this->plugin(new ServedAttributes())
+            ->beforeGetConfigurableAttributes($this->createMock(Configurable::class), $product);
+
+        $this->assertSame([], $this->counted);
     }
 
     public function testANewProductWithNoIdIsLeftAlone(): void
@@ -96,10 +133,18 @@ class SeedConfigurableAttributesTest extends TestCase
             return $this->createMock(SeededAttributeCollection::class);
         });
 
-        return new SeedConfigurableAttributes($served, $builder, $this->linkField());
+        $recorder = $this->createMock(FallbackRecorder::class);
+        $recorder->method('attributesServed')->willReturnCallback(function (): void {
+            $this->counted[] = 'served';
+        });
+        $recorder->method('attributesPreempted')->willReturnCallback(function (): void {
+            $this->counted[] = 'preempted';
+        });
+
+        return new SeedConfigurableAttributes($served, $builder, $this->linkField(), $recorder);
     }
 
-    private function view(): ConfigurableView
+    private function view(): ConfigurableViewInterface
     {
         return new ConfigurableView(['super_attributes' => [['attribute_id' => 93, 'super_attribute_id' => 11]]]);
     }

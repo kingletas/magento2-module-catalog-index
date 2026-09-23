@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Index;
 
 use Kingletas\CatalogIndex\Model\Index\IndexDefinition;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Test\Support\ShippedConfig;
 use PHPUnit\Framework\TestCase;
 

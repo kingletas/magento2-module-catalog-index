@@ -9,18 +9,19 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Rebuild;
 
-use Kingletas\Foundation\Api\ClockInterface;
-use Kingletas\Foundation\Model\Lock\LockRunner;
+use Kingletas\CatalogIndex\Api\Data\ChangeSetInterface;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Api\IndexAdminInterface;
 use Kingletas\CatalogIndex\Api\RefresherInterface;
 use Kingletas\CatalogIndex\Model\Config;
 use Kingletas\CatalogIndex\Model\Index\IndexDefinition;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\IndexNamer;
 use Kingletas\CatalogIndex\Model\Index\ScopeResolver;
 use Kingletas\CatalogIndex\Model\Index\StateStorage;
 use Kingletas\CatalogIndex\Model\Update\ChangeSet;
 use Kingletas\CatalogIndex\Model\Update\RefresherPool;
+use Kingletas\Foundation\Api\ClockInterface;
+use Kingletas\Foundation\Model\Lock\LockRunner;
 use Throwable;
 
 /**
@@ -132,7 +133,7 @@ class FullRebuild
      */
     private function replay(
         RefresherInterface $refresher,
-        ChangeSet $changes,
+        ChangeSetInterface $changes,
         int $scopeId,
         string $writeIndex,
         string $compareIndex,

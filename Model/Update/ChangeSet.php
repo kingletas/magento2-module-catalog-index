@@ -9,12 +9,15 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Update;
 
+use Kingletas\CatalogIndex\Api\Data\ChangeInterface;
+use Kingletas\CatalogIndex\Api\Data\ChangeSetInterface;
+
 /**
  * Every change one refresh made, plus how the store answered.
  */
-class ChangeSet
+class ChangeSet implements ChangeSetInterface
 {
-    /** @var array<string, Change> */
+    /** @var array<string, ChangeInterface> Keyed by scope and document id. */
     private array $changes = [];
 
     private int $written = 0;
@@ -24,15 +27,18 @@ class ChangeSet
     /** @var array<string, string> */
     private array $failed = [];
 
-    public function add(Change $change, string $scope = ''): void
+    /**
+     * @inheritDoc
+     */
+    public function add(ChangeInterface $change, string $scope = ''): void
     {
         if (!$change->isNothing()) {
-            $this->changes[$scope . ':' . $change->id] = $change;
+            $this->changes[$scope . ':' . $change->getId()] = $change;
         }
     }
 
     /**
-     * @param array<string, string> $failed
+     * @inheritDoc
      */
     public function record(int $written, int $stale, array $failed): void
     {
@@ -41,32 +47,42 @@ class ChangeSet
         $this->failed += $failed;
     }
 
-    public function merge(ChangeSet $other): void
+    /**
+     * Another implementation's changes are appended, since only this class knows the scope each was added under.
+     */
+    public function merge(ChangeSetInterface $other): void
     {
-        $this->changes = array_merge($this->changes, $other->changes);
-        $this->record($other->written, $other->stale, $other->failed);
+        $theirs = $other instanceof self ? $other->changes : $other->changes();
+        $this->changes = array_merge($this->changes, $theirs);
+        $this->record($other->written(), $other->stale(), $other->failed());
     }
 
     /**
-     * @return Change[]
+     * @inheritDoc
      */
     public function changes(): array
     {
         return array_values($this->changes);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function written(): int
     {
         return $this->written;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function stale(): int
     {
         return $this->stale;
     }
 
     /**
-     * @return array<string, string>
+     * @inheritDoc
      */
     public function failed(): array
     {

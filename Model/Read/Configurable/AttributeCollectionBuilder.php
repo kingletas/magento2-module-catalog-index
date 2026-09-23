@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Read\Configurable;
 
-use Kingletas\CatalogIndex\Model\Read\ConfigurableView;
+use Kingletas\CatalogIndex\Api\Data\ConfigurableViewInterface;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\Attribute;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable\AttributeFactory;
@@ -35,7 +35,7 @@ class AttributeCollectionBuilder
      *
      * @param int $linkId The parent's link field value, which is what Magento keys super attributes by.
      */
-    public function build(ConfigurableView $view, int $linkId, int $storeId): ?SeededAttributeCollection
+    public function build(ConfigurableViewInterface $view, int $linkId, int $storeId): ?SeededAttributeCollection
     {
         $rows = $view->superAttributes();
 

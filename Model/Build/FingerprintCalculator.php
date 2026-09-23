@@ -9,14 +9,21 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Build;
 
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Kingletas\CatalogIndex\Api\Data\DocumentInterface;
 use Kingletas\CatalogIndex\Model\Store\Document;
+use Kingletas\CatalogIndex\Model\Store\DocumentSchema;
 
 /**
  * Turns a draft into a document carrying one fingerprint per field group.
  */
 class FingerprintCalculator
 {
+    public function __construct(
+        private readonly DocumentSchema $schema = new DocumentSchema()
+    ) {
+    }
+
     /**
      * @param array<string, mixed> $fields
      */
@@ -25,7 +32,7 @@ class FingerprintCalculator
         return sha1((string) json_encode($this->canonical($fields), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    public function document(DocumentDraft $draft, int $version): DocumentInterface
+    public function document(DocumentDraftInterface $draft, int $version): DocumentInterface
     {
         $fingerprints = [];
 
@@ -36,7 +43,7 @@ class FingerprintCalculator
         $source = $draft->fields();
         $source[DocumentInterface::FINGERPRINTS] = $fingerprints;
 
-        return new Document((string) $draft->id, $version, $source);
+        return new Document((string) $draft->getId(), $version, $this->schema->stamp($source));
     }
 
     /**

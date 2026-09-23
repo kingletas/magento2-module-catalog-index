@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\CategoryViewInterface;
 use Magento\Catalog\Model\Category;
 
 /**
@@ -22,7 +23,7 @@ class CategoryHydrator
      * @param array<string, mixed> $entityData
      * @return array<string, mixed>
      */
-    public function detailData(CategoryView $view, array $entityData): array
+    public function detailData(CategoryViewInterface $view, array $entityData): array
     {
         return $entityData + $this->values($view);
     }
@@ -30,7 +31,7 @@ class CategoryHydrator
     /**
      * Adds what the collection did not load itself, so a menu, a breadcrumb and a filter cost no query each.
      */
-    public function fillListItem(Category $item, CategoryView $view): void
+    public function fillListItem(Category $item, CategoryViewInterface $view): void
     {
         foreach ($this->values($view) as $key => $value) {
             if (!$item->hasData($key)) {
@@ -42,7 +43,7 @@ class CategoryHydrator
     /**
      * @return array<string, mixed>
      */
-    private function values(CategoryView $view): array
+    private function values(CategoryViewInterface $view): array
     {
         $values = $view->attributes();
 

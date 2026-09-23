@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "php": ">=8.4",
+        "php": "^8.4",
         "kingletas/module-foundation": "^2.2",
         "kingletas/module-logger": "^3.0",
         "magento/framework": ">=103.0",
@@ -39,7 +39,7 @@
         "phpcompatibility/php-compatibility": "^9.3",
         "phpmd/phpmd": "^2.15",
         "phpstan/phpstan": "^2.0",
-        "phpunit/phpunit": "^10.5 || ^11.0",
+        "phpunit/phpunit": "^10.5",
         "slevomat/coding-standard": "^8.15"
     },
     "suggest": {
@@ -73,7 +73,7 @@
         "cs": "phpcs --standard=phpcs.xml.dist",
         "cs-fix": "phpcbf --standard=phpcs.xml.dist",
         "stan": "phpstan analyse --configuration phpstan.neon.dist --no-progress",
-        "md": "phpmd Api,Console,Cron,Exception,Model,Observer,Plugin,Queue text phpmd.xml.dist",
+        "md": "phpmd Api,Console,Cron,Exception,Model,Observer,Plugin,Queue,Setup text phpmd.xml.dist",
         "test": "phpunit --configuration phpunit.xml.dist",
         "test-wiring": "phpunit --configuration phpunit.xml.dist --testsuite wiring",
         "test-behaviour": "phpunit --configuration phpunit.xml.dist --testsuite behaviour",

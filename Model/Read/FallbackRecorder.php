@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\PageType;
 use Kingletas\CatalogIndex\Model\Metric\MetricStorage;
 
 /**
@@ -20,6 +21,10 @@ class FallbackRecorder
     public const string REASON_STORE_ERROR = 'store_error';
     public const string REASON_BREAKER_OPEN = 'breaker_open';
     public const string REASON_UNSUPPORTED = 'unsupported_product';
+    public const string REASON_PREEMPTED = 'preempted';
+
+    /** Counted beside the pages, because Magento asks for a configurable's attributes on any of them. */
+    public const string CONFIGURABLE_ATTRIBUTES = 'configurable_attributes';
 
     /** @var array<string, int> */
     private array $served = [];
@@ -34,12 +39,28 @@ class FallbackRecorder
 
     public function served(PageType $page, int $count = 1): void
     {
-        $this->served[$page->value] = ($this->served[$page->value] ?? 0) + $count;
+        $this->countServed($page->value, $count);
     }
 
     public function fellBack(PageType $page, string $reason, int $count = 1): void
     {
-        $this->fallbacks[$page->value][$reason] = ($this->fallbacks[$page->value][$reason] ?? 0) + $count;
+        $this->countFallback($page->value, $reason, $count);
+    }
+
+    /**
+     * A configurable's attribute collection was built from its document when Magento asked for it.
+     */
+    public function attributesServed(): void
+    {
+        $this->countServed(self::CONFIGURABLE_ATTRIBUTES, 1);
+    }
+
+    /**
+     * A configurable had a document, and a plugin sorted before this module's answered its attributes first.
+     */
+    public function attributesPreempted(): void
+    {
+        $this->countFallback(self::CONFIGURABLE_ATTRIBUTES, self::REASON_PREEMPTED, 1);
     }
 
     public function flush(): void
@@ -47,5 +68,15 @@ class FallbackRecorder
         $this->storage->add($this->served, $this->fallbacks);
         $this->served = [];
         $this->fallbacks = [];
+    }
+
+    private function countServed(string $surface, int $count): void
+    {
+        $this->served[$surface] = ($this->served[$surface] ?? 0) + $count;
+    }
+
+    private function countFallback(string $surface, string $reason, int $count): void
+    {
+        $this->fallbacks[$surface][$reason] = ($this->fallbacks[$surface][$reason] ?? 0) + $count;
     }
 }

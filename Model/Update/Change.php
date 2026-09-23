@@ -9,10 +9,12 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Update;
 
+use Kingletas\CatalogIndex\Api\Data\ChangeInterface;
+
 /**
  * How one document differs from the one it replaced.
  */
-class Change
+class Change implements ChangeInterface
 {
     /**
      * @param string[] $changedGroups
@@ -20,17 +22,65 @@ class Change
      * @param int[] $categoriesAfter
      */
     public function __construct(
-        public readonly int $id,
-        public readonly bool $created = false,
-        public readonly bool $deleted = false,
-        public readonly array $changedGroups = [],
-        public readonly array $categoriesBefore = [],
-        public readonly array $categoriesAfter = []
+        private readonly int $id,
+        private readonly bool $created = false,
+        private readonly bool $deleted = false,
+        private readonly array $changedGroups = [],
+        private readonly array $categoriesBefore = [],
+        private readonly array $categoriesAfter = []
     ) {
     }
 
     /**
-     * @param string[] $groups
+     * @inheritDoc
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isCreated(): bool
+    {
+        return $this->created;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getChangedGroups(): array
+    {
+        return $this->changedGroups;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCategoriesBefore(): array
+    {
+        return $this->categoriesBefore;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCategoriesAfter(): array
+    {
+        return $this->categoriesAfter;
+    }
+
+    /**
+     * @inheritDoc
      */
     public function touchesAny(array $groups): bool
     {
@@ -38,7 +88,7 @@ class Change
     }
 
     /**
-     * @return int[] Categories the product joined or left.
+     * @inheritDoc
      */
     public function movedCategories(): array
     {
@@ -49,13 +99,16 @@ class Change
     }
 
     /**
-     * @return int[]
+     * @inheritDoc
      */
     public function allCategories(): array
     {
         return array_values(array_unique(array_merge($this->categoriesBefore, $this->categoriesAfter)));
     }
 
+    /**
+     * @inheritDoc
+     */
     public function isNothing(): bool
     {
         return !$this->created && !$this->deleted && $this->changedGroups === []

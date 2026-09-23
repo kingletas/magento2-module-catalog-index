@@ -13,6 +13,8 @@ use Kingletas\CatalogIndex\Exception\DocumentStoreException;
 
 /**
  * Creates, swaps and removes the physical indexes behind each alias.
+ *
+ * @api
  */
 interface IndexAdminInterface
 {

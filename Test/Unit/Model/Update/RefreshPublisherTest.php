@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Update;
 
 use Kingletas\CatalogIndex\Api\RefresherInterface;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Update\RefresherPool;
 use Kingletas\CatalogIndex\Model\Update\RefreshPublisher;
 use Kingletas\CatalogIndex\Model\Update\RefreshRequest;

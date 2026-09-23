@@ -9,11 +9,13 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Api;
 
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
-use Kingletas\CatalogIndex\Model\Update\ChangeSet;
+use Kingletas\CatalogIndex\Api\Data\ChangeSetInterface;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 
 /**
  * Rebuilds one family of documents from the database.
+ *
+ * @api
  */
 interface RefresherInterface
 {
@@ -31,5 +33,5 @@ interface RefresherInterface
      *
      * @param int[] $ids
      */
-    public function refreshInto(array $ids, int $scopeId, string $writeIndex, string $compareIndex): ChangeSet;
+    public function refreshInto(array $ids, int $scopeId, string $writeIndex, string $compareIndex): ChangeSetInterface;
 }

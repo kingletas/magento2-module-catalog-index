@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Build\Field;
 
-use Kingletas\CatalogIndex\Model\Build\BuildContext;
-use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Kingletas\CatalogIndex\Model\Build\LinkField;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
@@ -42,7 +42,7 @@ class ConfigurableFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function prepareBatch(array $products, BuildContext $context): void
+    public function prepareBatch(array $products, BuildContextInterface $context): void
     {
         $this->resetBatch();
         $link = $this->linkField->product();
@@ -74,7 +74,7 @@ class ConfigurableFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function contribute(Product $product, DocumentDraft $draft, BuildContext $context): void
+    public function contribute(Product $product, DocumentDraftInterface $draft, BuildContextInterface $context): void
     {
         if ($draft->isExcluded() || $product->getTypeId() !== Configurable::TYPE_CODE) {
             return;
@@ -82,8 +82,8 @@ class ConfigurableFieldProvider extends AbstractFieldProvider
 
         $linkId = (int) $product->getData($this->linkField->product());
         $superAttributes = array_values($this->superAttributes[$linkId] ?? []);
-        $draft->set('super_attributes', $superAttributes, DocumentDraft::GROUP_LISTING);
-        $draft->set('configurable_options', $this->options[$linkId] ?? [], DocumentDraft::GROUP_LISTING);
+        $draft->set('super_attributes', $superAttributes, DocumentDraftInterface::GROUP_LISTING);
+        $draft->set('configurable_options', $this->options[$linkId] ?? [], DocumentDraftInterface::GROUP_LISTING);
     }
 
     /**
@@ -91,7 +91,7 @@ class ConfigurableFieldProvider extends AbstractFieldProvider
      *
      * @param int[] $parentLinkIds
      */
-    private function loadOptions(array $parentLinkIds, BuildContext $context): void
+    private function loadOptions(array $parentLinkIds, BuildContextInterface $context): void
     {
         foreach ($this->backendTables($parentLinkIds) as $table => $attributeIds) {
             $select = $this->optionSelect($parentLinkIds, $attributeIds, (string) $table, $context);
@@ -133,7 +133,7 @@ class ConfigurableFieldProvider extends AbstractFieldProvider
         array $parentLinkIds,
         array $attributeIds,
         string $table,
-        BuildContext $context
+        BuildContextInterface $context
     ): Select {
         $connection = $this->resourceConnection->getConnection();
         $select = $connection->select()
@@ -159,7 +159,7 @@ class ConfigurableFieldProvider extends AbstractFieldProvider
         return $this->joinOptionTables($select, $table, $context);
     }
 
-    private function joinOptionTables(Select $select, string $table, BuildContext $context): Select
+    private function joinOptionTables(Select $select, string $table, BuildContextInterface $context): Select
     {
         $link = $this->linkField->product();
         $entity = $this->resourceConnection->getTableName('catalog_product_entity');
@@ -182,7 +182,7 @@ class ConfigurableFieldProvider extends AbstractFieldProvider
             ->joinInner(
                 ['entity_website' => $this->resourceConnection->getTableName('catalog_product_website')],
                 'entity_website.product_id = entity.entity_id AND entity_website.website_id = '
-                . $context->websiteId,
+                . $context->getWebsiteId(),
                 []
             )
             ->joinInner(
@@ -211,7 +211,7 @@ class ConfigurableFieldProvider extends AbstractFieldProvider
             )
             ->joinLeft(
                 ['option_value' => $optionValue],
-                'option_value.option_id = entity_value.value AND option_value.store_id = ' . $context->storeId,
+                'option_value.option_id = entity_value.value AND option_value.store_id = ' . $context->getStoreId(),
                 []
             )
             ->joinLeft(
@@ -227,7 +227,7 @@ class ConfigurableFieldProvider extends AbstractFieldProvider
      *
      * @param int[] $parentLinkIds
      */
-    private function loadSuperAttributes(array $parentLinkIds, BuildContext $context): void
+    private function loadSuperAttributes(array $parentLinkIds, BuildContextInterface $context): void
     {
         $connection = $this->resourceConnection->getConnection();
         $labels = $this->resourceConnection->getTableName('catalog_product_super_attribute_label');
@@ -245,7 +245,7 @@ class ConfigurableFieldProvider extends AbstractFieldProvider
             ->joinLeft(
                 ['store' => $labels],
                 'store.product_super_attribute_id = main_table.product_super_attribute_id AND store.store_id = '
-                . $context->storeId,
+                . $context->getStoreId(),
                 [
                     'use_default' => $connection->getCheckSql(
                         'store.use_default IS NULL',

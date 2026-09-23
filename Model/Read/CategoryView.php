@@ -9,22 +9,32 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\CategoryViewInterface;
+
 /**
  * One category as a page sees it.
  */
-class CategoryView
+class CategoryView implements CategoryViewInterface
 {
     /**
      * @param array<string, mixed> $source
      */
     public function __construct(
-        public readonly int $id,
+        private readonly int $id,
         private readonly array $source
     ) {
     }
 
     /**
-     * @return array<string, mixed>
+     * @inheritDoc
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @inheritDoc
      */
     public function attributes(): array
     {
@@ -34,7 +44,7 @@ class CategoryView
     }
 
     /**
-     * Null when the document carries no count, which is not the same as a category with no products.
+     * @inheritDoc
      */
     public function productCount(): ?int
     {
@@ -43,6 +53,9 @@ class CategoryView
         return is_numeric($count) ? (int) $count : null;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function requestPath(): ?string
     {
         $path = $this->source['request_path'] ?? null;

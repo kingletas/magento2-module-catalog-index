@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Model\Rebuild;
 
 use Generator;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\ScopeResolver;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Select;

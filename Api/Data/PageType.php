@@ -7,10 +7,12 @@
 
 declare(strict_types=1);
 
-namespace Kingletas\CatalogIndex\Model\Read;
+namespace Kingletas\CatalogIndex\Api\Data;
 
 /**
  * The storefront surfaces that can read documents, each switched on separately.
+ *
+ * @api
  */
 enum PageType: string
 {

@@ -9,17 +9,19 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Read\Entity;
 
+use Kingletas\CatalogIndex\Api\Data\CategoryViewInterface;
+use Kingletas\CatalogIndex\Api\Data\ProductViewInterface;
 use Kingletas\CatalogIndex\Model\Read\CategoryHydrator;
 use Kingletas\CatalogIndex\Model\Read\CategoryView;
+use Kingletas\CatalogIndex\Model\Read\Configurable\ServedAttributes;
+use Kingletas\CatalogIndex\Model\Read\Configurable\ServedOptions;
 use Kingletas\CatalogIndex\Model\Read\DetailDocuments;
 use Kingletas\CatalogIndex\Model\Read\Entity\CategoryAttributeReader;
 use Kingletas\CatalogIndex\Model\Read\Entity\ProductAttributeReader;
 use Kingletas\CatalogIndex\Model\Read\Entity\ServedProductExtension;
-use Kingletas\CatalogIndex\Model\Read\Configurable\ServedAttributes;
-use Kingletas\CatalogIndex\Model\Read\Configurable\ServedOptions;
-use Kingletas\CatalogIndex\Test\Support\LinkFieldDouble;
 use Kingletas\CatalogIndex\Model\Read\ProductHydrator;
 use Kingletas\CatalogIndex\Model\Read\ProductView;
+use Kingletas\CatalogIndex\Test\Support\LinkFieldDouble;
 use Kingletas\CatalogIndex\Test\Support\ProductDoubles;
 use Kingletas\CatalogIndex\Test\Support\ShippedConfig;
 use Magento\Catalog\Api\Data\ProductInterface;
@@ -34,9 +36,9 @@ class EntityReadersTest extends TestCase
     use ProductDoubles;
     use ShippedConfig;
 
-    private ?ProductView $productView = null;
+    private ?ProductViewInterface $productView = null;
 
-    private ?CategoryView $categoryView = null;
+    private ?CategoryViewInterface $categoryView = null;
 
     /** @var array<int, array{0: int, 1: int}> */
     private array $asked = [];
@@ -144,12 +146,12 @@ class EntityReadersTest extends TestCase
     private function documents(): DetailDocuments
     {
         $documents = $this->createMock(DetailDocuments::class);
-        $documents->method('product')->willReturnCallback(function (int $id, int $storeId): ?ProductView {
+        $documents->method('product')->willReturnCallback(function (int $id, int $storeId): ?ProductViewInterface {
             $this->asked[] = [$id, $storeId];
 
             return $this->productView;
         });
-        $documents->method('category')->willReturnCallback(fn (): ?CategoryView => $this->categoryView);
+        $documents->method('category')->willReturnCallback(fn (): ?CategoryViewInterface => $this->categoryView);
 
         return $documents;
     }

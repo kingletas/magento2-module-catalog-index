@@ -9,10 +9,12 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Read;
 
+use Kingletas\CatalogIndex\Api\Data\ConfigurableViewInterface;
+
 /**
  * The parts of a document only a configurable product has: its super attributes and its option rows.
  */
-class ConfigurableView
+class ConfigurableView implements ConfigurableViewInterface
 {
     /**
      * @param array<string, mixed> $source
@@ -23,9 +25,7 @@ class ConfigurableView
     }
 
     /**
-     * The option rows Magento's own query would return, keyed by super attribute id.
-     *
-     * @return array<string, array<int, array<string, mixed>>>
+     * @inheritDoc
      */
     public function options(): array
     {
@@ -35,9 +35,7 @@ class ConfigurableView
     }
 
     /**
-     * The super attribute rows, in the position order Magento's own collection would return them.
-     *
-     * @return array<int, array<string, mixed>>
+     * @inheritDoc
      */
     public function superAttributes(): array
     {

@@ -14,7 +14,7 @@ use Kingletas\CatalogIndex\Model\Build\PriceDocumentBuilder;
 use Kingletas\CatalogIndex\Model\Build\VersionSource;
 use Kingletas\CatalogIndex\Model\Cache\PurgePlanner;
 use Kingletas\CatalogIndex\Model\Index\IndexDefinition;
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\IndexNamer;
 use Kingletas\CatalogIndex\Model\Index\ScopeResolver;
 use Kingletas\CatalogIndex\Model\Index\StateStorage;

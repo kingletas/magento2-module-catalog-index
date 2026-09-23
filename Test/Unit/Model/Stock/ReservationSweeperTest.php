@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Test\Unit\Model\Stock;
 
-use Kingletas\CatalogIndex\Model\Index\IndexFamily;
+use Kingletas\CatalogIndex\Api\Data\IndexFamily;
 use Kingletas\CatalogIndex\Model\Index\StateStorage;
 use Kingletas\CatalogIndex\Model\Stock\ReservationSweeper;
 use Kingletas\CatalogIndex\Model\Update\RefreshPublisher;

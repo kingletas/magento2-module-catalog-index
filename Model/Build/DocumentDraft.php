@@ -10,16 +10,13 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Model\Build;
 
 use DateTimeImmutable;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 
 /**
  * A document under construction, with each field assigned to the group that decides what a change purges.
  */
-class DocumentDraft
+class DocumentDraft implements DocumentDraftInterface
 {
-    public const string GROUP_LISTING = 'listing';
-    public const string GROUP_DETAIL = 'detail';
-    public const string GROUP_INTERNAL = 'internal';
-
     /** @var array<string, mixed> */
     private array $fields = [];
 
@@ -32,29 +29,54 @@ class DocumentDraft
     private array $refreshAt = [];
 
     public function __construct(
-        public readonly int $id,
-        public readonly int $scopeId
+        private readonly int $id,
+        private readonly int $scopeId
     ) {
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getScopeId(): int
+    {
+        return $this->scopeId;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function set(string $field, mixed $value, string $group = self::GROUP_DETAIL): void
     {
         $this->fields[$field] = $value;
         $this->groups[$field] = $group;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function get(string $field, mixed $default = null): mixed
     {
         return array_key_exists($field, $this->fields) ? $this->fields[$field] : $default;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function has(string $field): bool
     {
         return array_key_exists($field, $this->fields);
     }
 
     /**
-     * @return array<string, mixed>
+     * @inheritDoc
      */
     public function fields(): array
     {
@@ -62,7 +84,7 @@ class DocumentDraft
     }
 
     /**
-     * @return array<string, array<string, mixed>> Group name to its fields.
+     * @inheritDoc
      */
     public function fieldsByGroup(): array
     {
@@ -77,23 +99,32 @@ class DocumentDraft
         return $grouped;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function exclude(string $reason): void
     {
         $this->exclusion ??= $reason;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function isExcluded(): bool
     {
         return $this->exclusion !== null;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function exclusionReason(): ?string
     {
         return $this->exclusion;
     }
 
     /**
-     * Asks for the document to be rebuilt when a time-bound value starts or stops applying.
+     * @inheritDoc
      */
     public function refreshAt(DateTimeImmutable $moment): void
     {
@@ -101,7 +132,7 @@ class DocumentDraft
     }
 
     /**
-     * @return array<int, DateTimeImmutable> Keyed by unix time.
+     * @inheritDoc
      */
     public function refreshMoments(): array
     {

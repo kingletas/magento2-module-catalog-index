@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Kingletas\CatalogIndex\Model\OpenSearch;
 
 use InvalidArgumentException;
+use Kingletas\CatalogIndex\Api\Data\WriteResultInterface;
 use Kingletas\CatalogIndex\Api\DocumentStoreInterface;
 use Kingletas\CatalogIndex\Model\Store\WriteResult;
 use OpenSearch\Client;
@@ -31,7 +32,7 @@ class OpenSearchDocumentStore implements DocumentStoreInterface
     /**
      * @inheritDoc
      */
-    public function write(string $index, array $documents): WriteResult
+    public function write(string $index, array $documents): WriteResultInterface
     {
         $this->assertName($index);
 
@@ -52,7 +53,7 @@ class OpenSearchDocumentStore implements DocumentStoreInterface
     /**
      * @inheritDoc
      */
-    public function delete(string $index, array $ids, int $version): WriteResult
+    public function delete(string $index, array $ids, int $version): WriteResultInterface
     {
         $this->assertName($index);
 
@@ -110,7 +111,7 @@ class OpenSearchDocumentStore implements DocumentStoreInterface
     /**
      * @param array<int, mixed> $body
      */
-    private function bulk(array $body, string $operation): WriteResult
+    private function bulk(array $body, string $operation): WriteResultInterface
     {
         $answer = (array) $this->gateway->send(
             static fn (Client $client, array $options): mixed => $client->bulk(['body' => $body] + $options),

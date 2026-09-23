@@ -9,16 +9,18 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Api;
 
-use Kingletas\CatalogIndex\Model\Stock\StockLevel;
+use Kingletas\CatalogIndex\Api\Data\StockLevelInterface;
 
 /**
  * Reads display stock for many products at once.
+ *
+ * @api
  */
 interface StockReaderInterface
 {
     /**
      * @param int[] $productIds
-     * @return array<int, StockLevel> Keyed by product id; products with no stock record omitted.
+     * @return array<int, StockLevelInterface> Keyed by product id; products with no stock record omitted.
      */
     public function read(array $productIds, int $websiteId): array;
 

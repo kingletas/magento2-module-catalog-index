@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Cache;
 
+use Kingletas\CatalogIndex\Api\Data\ChangeSetInterface;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Kingletas\CatalogIndex\Model\Build\CategoryDocumentBuilder;
-use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
 use Kingletas\CatalogIndex\Model\Build\StockDocumentBuilder;
-use Kingletas\CatalogIndex\Model\Update\ChangeSet;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 
@@ -21,7 +21,10 @@ use Magento\Catalog\Model\Product;
  */
 class PurgePlanner
 {
-    private const array VISIBLE_PRODUCT_GROUPS = [DocumentDraft::GROUP_LISTING, DocumentDraft::GROUP_DETAIL];
+    private const array VISIBLE_PRODUCT_GROUPS = [
+        DocumentDraftInterface::GROUP_LISTING,
+        DocumentDraftInterface::GROUP_DETAIL,
+    ];
 
     private const array VISIBLE_STOCK_GROUPS = [
         StockDocumentBuilder::GROUP_SALABLE,
@@ -32,16 +35,18 @@ class PurgePlanner
     /**
      * @return string[]
      */
-    public function forProducts(ChangeSet $changes): array
+    public function forProducts(ChangeSetInterface $changes): array
     {
         $tags = [];
 
         foreach ($changes->changes() as $change) {
             if ($change->touchesAny(self::VISIBLE_PRODUCT_GROUPS)) {
-                $tags[] = $this->product($change->id);
+                $tags[] = $this->product($change->getId());
             }
 
-            $categories = $change->created || $change->deleted ? $change->allCategories() : $change->movedCategories();
+            $categories = $change->isCreated() || $change->isDeleted()
+                ? $change->allCategories()
+                : $change->movedCategories();
 
             foreach ($categories as $categoryId) {
                 $tags[] = $this->categoryProducts($categoryId);
@@ -54,12 +59,12 @@ class PurgePlanner
     /**
      * @return string[]
      */
-    public function forPrices(ChangeSet $changes): array
+    public function forPrices(ChangeSetInterface $changes): array
     {
         $tags = [];
 
         foreach ($changes->changes() as $change) {
-            $tags[] = $this->product($change->id);
+            $tags[] = $this->product($change->getId());
         }
 
         return $this->unique($tags);
@@ -71,7 +76,7 @@ class PurgePlanner
      * @param array<int, int[]> $categoriesByProduct
      * @return string[]
      */
-    public function forStock(ChangeSet $changes, array $categoriesByProduct): array
+    public function forStock(ChangeSetInterface $changes, array $categoriesByProduct): array
     {
         $tags = [];
 
@@ -80,10 +85,10 @@ class PurgePlanner
                 continue;
             }
 
-            $tags[] = $this->product($change->id);
+            $tags[] = $this->product($change->getId());
 
             if ($change->touchesAny([StockDocumentBuilder::GROUP_SALABLE])) {
-                foreach ($categoriesByProduct[$change->id] ?? [] as $categoryId) {
+                foreach ($categoriesByProduct[$change->getId()] ?? [] as $categoryId) {
                     $tags[] = $this->categoryProducts($categoryId);
                 }
             }
@@ -95,13 +100,13 @@ class PurgePlanner
     /**
      * @return int[] Products whose salable flag changed.
      */
-    public function salabilityFlips(ChangeSet $changes): array
+    public function salabilityFlips(ChangeSetInterface $changes): array
     {
         $ids = [];
 
         foreach ($changes->changes() as $change) {
             if ($change->touchesAny([StockDocumentBuilder::GROUP_SALABLE])) {
-                $ids[] = $change->id;
+                $ids[] = $change->getId();
             }
         }
 
@@ -111,13 +116,13 @@ class PurgePlanner
     /**
      * @return string[]
      */
-    public function forCategories(ChangeSet $changes): array
+    public function forCategories(ChangeSetInterface $changes): array
     {
         $tags = [];
 
         foreach ($changes->changes() as $change) {
             if ($change->touchesAny([CategoryDocumentBuilder::GROUP_PAGE])) {
-                $tags[] = Category::CACHE_TAG . '_' . $change->id;
+                $tags[] = Category::CACHE_TAG . '_' . $change->getId();
             }
         }
 

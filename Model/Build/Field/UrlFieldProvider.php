@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Kingletas\CatalogIndex\Model\Build\Field;
 
-use Kingletas\CatalogIndex\Model\Build\BuildContext;
-use Kingletas\CatalogIndex\Model\Build\DocumentDraft;
+use Kingletas\CatalogIndex\Api\Data\BuildContextInterface;
+use Kingletas\CatalogIndex\Api\Data\DocumentDraftInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\ResourceConnection;
 
@@ -32,7 +32,7 @@ class UrlFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function prepareBatch(array $products, BuildContext $context): void
+    public function prepareBatch(array $products, BuildContextInterface $context): void
     {
         $this->paths = [];
 
@@ -45,7 +45,7 @@ class UrlFieldProvider extends AbstractFieldProvider
             $connection->select()
                 ->from($this->resourceConnection->getTableName('url_rewrite'), ['entity_id', 'request_path'])
                 ->where('entity_type = ?', 'product')
-                ->where('store_id = ?', $context->storeId)
+                ->where('store_id = ?', $context->getStoreId())
                 ->where('redirect_type = ?', 0)
                 ->where('metadata IS NULL')
                 ->where('entity_id IN (?)', array_keys($products))
@@ -67,7 +67,7 @@ class UrlFieldProvider extends AbstractFieldProvider
     /**
      * @inheritDoc
      */
-    public function contribute(Product $product, DocumentDraft $draft, BuildContext $context): void
+    public function contribute(Product $product, DocumentDraftInterface $draft, BuildContextInterface $context): void
     {
         if ($draft->isExcluded()) {
             return;
@@ -76,7 +76,7 @@ class UrlFieldProvider extends AbstractFieldProvider
         $path = $this->paths[(int) $product->getId()] ?? null;
 
         if ($path !== null) {
-            $draft->set('request_path', $path, DocumentDraft::GROUP_LISTING);
+            $draft->set('request_path', $path, DocumentDraftInterface::GROUP_LISTING);
         }
     }
 }

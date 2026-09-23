@@ -12,6 +12,7 @@ namespace Kingletas\CatalogIndex\Plugin\Configurable;
 use Kingletas\CatalogIndex\Model\Build\LinkField;
 use Kingletas\CatalogIndex\Model\Read\Configurable\AttributeCollectionBuilder;
 use Kingletas\CatalogIndex\Model\Read\Configurable\ServedAttributes;
+use Kingletas\CatalogIndex\Model\Read\FallbackRecorder;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 
@@ -25,7 +26,8 @@ class SeedConfigurableAttributes
     public function __construct(
         private readonly ServedAttributes $served,
         private readonly AttributeCollectionBuilder $builder,
-        private readonly LinkField $linkField
+        private readonly LinkField $linkField,
+        private readonly FallbackRecorder $recorder
     ) {
     }
 
@@ -37,11 +39,19 @@ class SeedConfigurableAttributes
      */
     public function beforeGetConfigurableAttributes(Configurable $subject, Product $product): ?array
     {
-        if (!$product->getId() || $product->hasData(self::CONFIGURABLE_ATTRIBUTES)) {
+        $id = (int) $product->getId();
+
+        if ($id === 0) {
             return null;
         }
 
-        $view = $this->served->forProduct((int) $product->getId());
+        if ($product->hasData(self::CONFIGURABLE_ATTRIBUTES)) {
+            $this->countPreemption($id);
+
+            return null;
+        }
+
+        $view = $this->served->forProduct($id);
 
         if ($view === null) {
             return null;
@@ -55,8 +65,19 @@ class SeedConfigurableAttributes
 
         if ($collection !== null) {
             $product->setData(self::CONFIGURABLE_ATTRIBUTES, $collection);
+            $this->recorder->attributesServed();
         }
 
         return null;
+    }
+
+    /**
+     * Counted once per product, so status shows a document that went unused because another plugin answered first.
+     */
+    private function countPreemption(int $id): void
+    {
+        if ($this->served->notePreempted($id)) {
+            $this->recorder->attributesPreempted();
+        }
     }
 }

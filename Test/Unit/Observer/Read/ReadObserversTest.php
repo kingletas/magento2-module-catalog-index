@@ -13,7 +13,7 @@ use Kingletas\CatalogIndex\Model\Read\CollectionHydrator;
 use Kingletas\CatalogIndex\Model\Read\DocumentAttributeCodes;
 use Kingletas\CatalogIndex\Model\Read\FallbackRecorder;
 use Kingletas\CatalogIndex\Model\Read\PageScope;
-use Kingletas\CatalogIndex\Model\Read\PageType;
+use Kingletas\CatalogIndex\Api\Data\PageType;
 use Kingletas\CatalogIndex\Model\Read\ReadDecision;
 use Kingletas\CatalogIndex\Model\Read\ReadGate;
 use Kingletas\CatalogIndex\Observer\Read\EnterEntityPage;
