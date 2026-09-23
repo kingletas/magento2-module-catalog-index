@@ -110,16 +110,13 @@ The full design, with the reasoning for each decision, is in [docs/architecture.
 
 ## Installation
 
-Nothing here is on Packagist, and Magento itself needs your `repo.magento.com` keys. Composer only reads a `repositories` list from the package you're installing into, so these go in your store's own `composer.json` first:
+Nothing here is on Packagist, and Composer only reads a `repositories` list from the package you're installing into. So add the Kingletas package feed to your store's own `composer.json`, beside the repository your store already installs Magento from. From the store's root:
 
-```json
-"repositories": [
-    { "type": "composer", "url": "https://repo.magento.com/" },
-    { "type": "composer", "url": "https://kingletas.github.io/packages" }
-]
+```bash
+composer config repositories.kingletas composer https://kingletas.github.io/packages
 ```
 
-The second line is the Kingletas package feed, which serves this module and `kingletas/module-foundation`, which it depends on.
+It serves this module and `kingletas/module-foundation`, which it depends on. Don't add `repo.magento.com` if your store doesn't already use it: a Mage-OS store has no keys for it, and Composer stops with a 401 before it resolves anything.
 
 Then:
 
@@ -129,7 +126,7 @@ bin/magento module:enable Kingletas_CatalogIndex
 bin/magento setup:upgrade
 ```
 
-`-W` lets Composer move `kingletas/module-foundation` forward if your store already has an older one: this module needs 2.2 or later. It also needs `Magento_OpenSearch` enabled, which every 2.4.8 and later install ships with.
+`-W` lets Composer move `kingletas/module-foundation` forward if your store already has an older one: this module needs 2.2 or later. It can't move one your store's `composer.json` pins to an exact version, such as `2.1.0`: loosen that to `^2.1` first. It also needs `Magento_OpenSearch` enabled, which every 2.4.8 and later install ships with.
 
 Then, in this order:
 
