@@ -19,9 +19,13 @@ use Kingletas\CatalogIndex\Model\Store\DocumentSchema;
  */
 class FingerprintCalculator
 {
-    public function __construct(
-        private readonly DocumentSchema $schema = new DocumentSchema()
-    ) {
+    private readonly DocumentSchema $schema;
+
+    public function __construct(?DocumentSchema $schema = null)
+    {
+        // Made here and not as the argument's default: setup:di:compile copies every default into the store's
+        // generated metadata, and an object copied there stops the store from starting.
+        $this->schema = $schema ?? new DocumentSchema();
     }
 
     /**

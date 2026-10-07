@@ -2,6 +2,13 @@
 
 All notable changes to this module are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.2 - 2026-10-07
+
+### Fixed
+
+- **A store in production mode no longer stops after `setup:di:compile` with this module installed.** In 1.0.1, once a store had compiled, every `bin/magento` command failed with `Call to undefined method Kingletas\CatalogIndex\Model\Store\DocumentSchema::__set_state()`; 1.0.0 carries the same line. One class gave a constructor argument an object as its default, and the compiler copies every default into the store's generated metadata, where an object cannot be read back. The object is now made inside the constructor. **1.0.0 and 1.0.1 should not be installed on a store that compiles; a store in developer mode was not affected.** Seen and fixed on one Mage-OS 3.5.0 store: with 1.0.1 the compile left the store failing, and with this change the same deploy finishes.
+- A test now refuses any class in the module whose constructor gives an argument an object as its default.
+
 ## 1.0.1 - 2026-09-26
 
 ### Fixed
